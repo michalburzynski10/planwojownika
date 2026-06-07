@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Polityka prywatności — Plan Wojownika</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Jak Michał przeszedł z 105 kg, uzależnienia od TikToka i wstydu — do 85 kg, 3 wygranych walk MMA i własnego programu transformacji.">
+<link rel="canonical" href="https://planwojownika.pl/polityka-prywatnosci.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-2: #121212;
+    --bg-3: #181818;
+    --line: #262626;
+    --line-2: #333;
+    --text: #f4f4f4;
+    --text-2: #a8a8a8;
+    --muted: #6e6e6e;
+    --accent: #e63946;
+    --accent-2: #ff4d5e;
+    --accent-soft: rgba(230,57,70,.12);
+    --ok: #22c55e;
+    --gold: #d4af37;
+    --r-sm: 6px;
+    --r-md: 10px;
+    --r-lg: 16px;
+    --maxw: 740px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+  body { overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+
+  .display {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    letter-spacing: .01em;
+    line-height: .95;
+    text-transform: uppercase;
+  }
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  /* NAV */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(10,10,10,.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+    border: 1.5px solid var(--accent);
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    color: var(--accent);
+  }
+  .brand-logo { height: 44px; width: auto; display: block; }
+  .back-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+    transition: color .2s;
+  }
+  .back-link:hover { color: var(--text); }
+  .back-link svg { width: 16px; height: 16px; }
+
+  /* ARTICLE */
+  article {
+    padding: 80px 0 120px;
+  }
+
+  .article-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .article-title {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: .95;
+    letter-spacing: .01em;
+    margin: 0 0 32px;
+  }
+  .article-title .red { color: var(--accent); }
+
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-2);
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+  }
+  .article-meta .dot {
+    width: 3px;
+    height: 3px;
+    background: var(--muted);
+    border-radius: 50%;
+  }
+
+  .story-img {
+    border-radius: var(--r-md);
+    border: 1px solid var(--line);
+    width: 100%;
+    margin: 48px 0;
+    object-fit: cover;
+    max-height: 500px;
+  }
+  .story-img-caption {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: -36px;
+    margin-bottom: 48px;
+  }
+
+  article p {
+    margin: 0 0 24px;
+    color: var(--text-2);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+  article p b, article p strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  article h2 {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(24px, 4vw, 36px);
+    line-height: 1;
+    letter-spacing: .01em;
+    color: var(--text);
+    margin: 64px 0 20px;
+  }
+  article h2 .red { color: var(--accent); }
+
+  .pull-quote {
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 4px 24px;
+    margin: 48px 0;
+  }
+  .pull-quote q {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.45;
+    font-style: normal;
+    quotes: none;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin: 48px 0;
+  }
+  .stat-box {
+    text-align: center;
+  }
+  .stat-ic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .stat-ic svg {
+    width: 40px;
+    height: 40px;
+    display: block;
+    color: var(--text-2);
+  }
+  .stat-box b {
+    display: block;
+    font-size: 36px;
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-box span {
+    font-size: 12px;
+    color: var(--text-2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  .chapter-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid rgba(230,57,70,.25);
+    border-radius: var(--r-sm);
+    padding: 4px 10px;
+    margin-bottom: 12px;
+  }
+
+  .timeline {
+    border-left: 2px solid var(--line);
+    padding-left: 28px;
+    margin: 48px 0;
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 40px;
+  }
+  .timeline-item:last-child { margin-bottom: 0; }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -35px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+  }
+  .timeline-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .timeline-item h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 8px;
+  }
+  .timeline-item p {
+    font-size: 15px;
+    margin: 0;
+  }
+
+  .cta-box {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 48px 40px;
+    text-align: center;
+    margin-top: 80px;
+  }
+  .cta-box .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .cta-box h2 {
+    margin: 0 0 16px;
+    font-size: clamp(28px, 5vw, 42px);
+  }
+  .cta-box p {
+    max-width: 480px;
+    margin: 0 auto 32px;
+    font-size: 16px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    border-radius: var(--r-md);
+    border: none;
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: var(--accent-2);
+    transform: translateY(-1px);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1.5px solid var(--line-2);
+  }
+  .btn-ghost:hover {
+    border-color: var(--text-2);
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 56px 0;
+  }
+
+  .photo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 48px 0 8px;
+  }
+  .photo-grid img {
+    border-radius: var(--r-md);
+    border: 1px solid var(--line);
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+  }
+  .photo-grid-caption {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .photo-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 40px 0 8px;
+  }
+  .photo-grid-4 img {
+    border-radius: var(--r-md);
+    border: 1px solid var(--line);
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    filter: grayscale(.45) brightness(.88);
+    transition: filter .4s ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .photo-grid-4 img:hover { filter: none; }
+  }
+
+  @media (max-width: 600px) {
+    .photo-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .stats-row { gap: 16px; }
+    .cta-box { padding: 36px 24px; }
+  }
+
+  /* ── INLINE CTA BLOCKS ── */
+  .cta-inline {
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,0,0,.2);
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    margin: 48px 0;
+  }
+  .cta-open {
+    text-align: center;
+    margin: 48px 0;
+    padding: 32px 0;
+  }
+  article p.cta-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+    line-height: 1.4;
+  }
+  article .cta-heading {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 10px;
+    line-height: 1.3;
+  }
+  article .cta-heading-lg {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 10px;
+    line-height: 1.3;
+  }
+  article p.cta-sub {
+    color: var(--text-2);
+    font-size: 15px;
+    margin: 0 0 24px;
+    line-height: 1.65;
+  }
+  .cta-btn-story {
+    display: inline-block;
+    background: #E53935;
+    color: #fff;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all .2s ease;
+  }
+  .cta-btn-story.md { padding: 16px 40px; font-size: 16px; }
+  .cta-btn-story.lg {
+    padding: 20px 56px;
+    font-size: 18px;
+    box-shadow: 0 4px 20px rgba(229,57,53,.4);
+  }
+  .cta-btn-story:hover { background: #C62828; transform: scale(1.02); }
+  article p.cta-fine {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 16px 0 0;
+    line-height: 1.5;
+  }
+  .cta-trust {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--text-2);
+    flex-wrap: wrap;
+  }
+  @media (max-width: 768px) {
+    .cta-btn-story.md { padding: 14px 28px; font-size: 14px; }
+    .cta-btn-story.lg { padding: 14px 28px; font-size: 16px; }
+    article .cta-heading { font-size: 20px; }
+    article .cta-heading-lg { font-size: 23px; }
+  }
+
+  /* ── ZMIANA 2: Koszt braku działania ── */
+  .cost-block {
+    background: rgba(230,57,70,.05);
+    border: 1px solid rgba(230,57,70,.18);
+    border-radius: var(--r-md);
+    padding: 28px 32px;
+    margin: 32px 0;
+  }
+  article p.cost-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+    line-height: 1.4;
+  }
+  .cost-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cost-list li {
+    color: var(--text-2);
+    font-size: 15px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    line-height: 1.5;
+  }
+  .cost-list li:last-child { border-bottom: none; }
+
+  /* ── ZMIANA 3: Future-pacing ── */
+  .future-box {
+    background: rgba(255,255,255,.02);
+    border: 1px solid var(--line-2);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--r-md);
+    padding: 32px;
+    margin: 48px 0;
+  }
+  article p.future-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 10px;
+    line-height: 1.4;
+  }
+  .future-heading {
+    font-family: 'Anton', sans-serif;
+    font-size: 30px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: .01em;
+    color: var(--text);
+    line-height: 1;
+    margin: 0 0 16px;
+  }
+  .future-box p { font-size: 16px; margin: 0 0 12px; }
+  .future-box p:last-child { margin-bottom: 0; }
+
+  /* ── ZMIANA 4: Brain block ── */
+  .brain-block {
+    background: rgba(255,255,255,.02);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 28px 32px;
+    margin: 48px 0;
+    text-align: center;
+  }
+  article p.brain-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin: 0 0 14px;
+    line-height: 1.4;
+  }
+  .brain-block p { font-size: 15px; margin: 0 0 12px; }
+  .brain-block p:last-child { margin-bottom: 0; }
+  .brain-block strong { color: var(--text); }
+
+  /* ── ZMIANA 5: Dual timeline ── */
+  .timeline-dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+    margin: 48px 0;
+  }
+  .timeline-col-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .timeline { margin: 0; }
+  .timeline-yours { border-left-color: var(--accent); }
+  .timeline-yours .timeline-item::before {
+    background: var(--accent);
+    border-color: var(--bg);
+  }
+  .timeline-yours .timeline-date { color: var(--text); }
+  @media (max-width: 640px) {
+    .timeline-dual { grid-template-columns: 1fr; gap: 24px; }
+  }
+
+  /* ── ZMIANA 6: Micro-commitment CTA ── */
+  .cta-commit {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 48px 40px;
+    text-align: center;
+    margin-top: 80px;
+  }
+  .cta-commit .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .cta-commit h2 { margin: 0 0 16px; font-size: clamp(28px, 5vw, 42px); }
+  .cta-commit p { max-width: 480px; margin: 0 auto 24px; font-size: 16px; color: var(--text-2); }
+  #commit-s1, #commit-s2 { transition: opacity .3s ease; }
+  .commit-name-input {
+    background: var(--bg-3);
+    border: 1.5px solid var(--line-2);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    font-size: 16px;
+    padding: 14px 20px;
+    border-radius: var(--r-md);
+    width: 220px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .commit-name-input:focus { border-color: var(--accent); }
+  .cta-commit .commit-err {
+    display: none;
+    margin: 0 auto 14px;
+    max-width: none;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .cta-commit .commit-err.show { display: block; }
+  @media (max-width: 540px) {
+    .cta-commit { padding: 36px 20px; }
+    .commit-name-input { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<!-- WZÓR do weryfikacji prawnej. Uzupełnić pola [...] -->
+
+<nav class="nav" aria-label="Nawigacja">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="Plan Wojownika — strona główna">
+      <img src="logo.jpg" alt="Plan Wojownika" class="brand-logo">
+    </a>
+    <a href="index.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M10 4L6 8l4 4"/>
+      </svg>
+      Wróć do strony głównej
+    </a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <article>
+      <span class="article-eyebrow">Dokument prawny</span>
+      <h1 class="article-title display">Polityka prywatności</h1>
+      <div class="article-meta"><span>Plan Wojownika</span><span class="dot" aria-hidden="true"></span><span>Obowiązuje od: [data]</span></div>
+
+      <h2>1. Administrator danych</h2>
+      <p>Administratorem danych jest Michał Burzyński, Hołody 33, e-mail: michal@planwojownika.pl.</p>
+
+      <h2>2. Jakie dane przetwarzamy</h2>
+      <p><b>Dane kontaktowe i zamówienia:</b> imię, e-mail, numer telefonu, dane do płatności i rozliczenia.</p>
+      <p><b>Dane z Ankiety:</b> wiek, waga, wzrost, poziom aktywności, cel, dostępny czas, preferowany kanał i godzina kontaktu, Twoje „dlaczego”.</p>
+      <p><b>Dane dotyczące zdrowia</b> (szczególna kategoria, art. 9 RODO): kontuzje, ograniczenia, używki, jakość snu — podawane w Ankiecie w celu dopasowania Planu. Przetwarzamy je wyłącznie na podstawie Twojej wyraźnej zgody (art. 9 ust. 2 lit. a RODO). Podanie ich jest dobrowolne, ale bez nich nie dopasujemy bezpiecznie Planu.</p>
+      <p><b>Dane techniczne:</b> m.in. adres IP, pliki cookies.</p>
+
+      <h2>3. Cele i podstawy prawne</h2>
+      <p>Realizacja umowy — art. 6 ust. 1 lit. b RODO. Dopasowanie Planu na podstawie danych o zdrowiu — art. 9 ust. 2 lit. a (zgoda). Przypomnienia i kontakt (WhatsApp/SMS/e-mail/telefon) — art. 6 ust. 1 lit. a (zgoda). Obowiązki księgowe — art. 6 ust. 1 lit. c. Reklamacje i roszczenia — art. 6 ust. 1 lit. f. Marketing własny (za zgodą) — art. 6 ust. 1 lit. a / f.</p>
+
+      <h2>4. Odbiorcy danych</h2>
+      <p>Zaufane podmioty przetwarzające, wyłącznie w niezbędnym zakresie: operator płatności [Przelewy24], dostawca mailingu [ESP], dostawca SMS/WhatsApp [SMSAPI/Twilio/Meta], dostawcy narzędzi analitycznych i reklamowych (Google Ireland Ltd. — Google Analytics 4, Meta Platforms Ireland Ltd. — Meta Pixel, TikTok Technology Ltd. — TikTok Pixel), hosting i narzędzia IT, biuro rachunkowe. Nie sprzedajemy danych. Przekazania poza EOG odbywają się z odpowiednimi zabezpieczeniami (np. standardowe klauzule umowne).</p>
+
+      <h2>5. Okres przechowywania</h2>
+      <p>Dane umowy i rozliczeń — przez okres wymagany przepisami (zwykle 5 lat). Dane na podstawie zgody (zdrowotne, marketingowe) — do wycofania zgody. Dane do obrony przed roszczeniami — do przedawnienia.</p>
+
+      <h2>6. Twoje prawa</h2>
+      <p>Masz prawo do dostępu, sprostowania, usunięcia, ograniczenia, przenoszenia danych, sprzeciwu oraz wycofania zgody w dowolnym momencie (bez wpływu na zgodność z prawem przetwarzania przed wycofaniem). Możesz wnieść skargę do Prezesa UODO. Kontakt: michal@planwojownika.pl.</p>
+
+      <h2>7. Pliki cookies</h2>
+      <p>Strona używa cookies niezbędnych do działania oraz — za zgodą — analitycznych/marketingowych. Ustawienia zmienisz w przeglądarce. Do celów analitycznych i marketingowych — wyłącznie za Twoją zgodą — korzystamy z: <b>Google Analytics 4</b> (Google Ireland Ltd.), <b>Meta Pixel</b> (Meta Platforms Ireland Ltd.) oraz <b>TikTok Pixel</b> (TikTok Technology Ltd.). Narzędzia te wykorzystują pliki cookies i identyfikatory urządzenia m.in. do pomiaru skuteczności reklam oraz remarketingu i mogą przekazywać dane poza EOG na podstawie odpowiednich zabezpieczeń. Zgodę możesz w każdej chwili wycofać lub zmienić przez link Ustawienia cookies w stopce strony albo zmieniając ustawienia plików cookies w przeglądarce.</p>
+
+      <h2>8. Zgody na kontakt</h2>
+      <p>Zgody na kontakt przez WhatsApp, SMS, e-mail lub telefon są dobrowolne, odrębne i można je wycofać w każdej chwili (np. odpowiadając STOP lub pisząc na michal@planwojownika.pl).</p>
+
+      <h2>9. Zmiany polityki</h2>
+      <p>Polityka może być aktualizowana; aktualna wersja jest publikowana na stronie wraz z datą obowiązywania.</p>
+    </article>
+  </div>
+</main>
+
+</body>
+</html>

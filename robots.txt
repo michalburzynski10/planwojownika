@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Strony z meta noindex (detoks, dziekuje, quiz-popup) celowo NIE są tu blokowane,
+# żeby roboty mogły odczytać znacznik noindex. Sitemap zawiera tylko strony publiczne.
+
+Sitemap: https://planwojownika.pl/sitemap.xml

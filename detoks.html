@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>7-dniowy Detoks Dopaminowy — Plan Wojownika</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Darmowy 7-dniowy Detoks Dopaminowy — krok po kroku wyrwij się z pętli scrollowania i odzyskaj kontrolę nad uwagą.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PLAN WOJOWNIKA — KONFIGURACJA + TRACKING  (ten sam blok co w index.html)
+     Uzupełnij wartości oznaczone TODO. Puste = funkcja nieaktywna.
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+  window.PW = {
+    CHECKOUT_URL: '',      // TODO: URL checkoutu (Przelewy24 / Stripe)
+    META_PIXEL_ID: '',     // TODO: np. '1234567890123456'
+    TIKTOK_PIXEL_ID: '',   // TODO: np. 'CXXXXXXXXXXXXXXXXX'
+    GA4_ID: '',            // TODO: np. 'G-XXXXXXXXXX'
+    PRICE: 349,
+    CURRENCY: 'PLN'
+  };
+</script>
+
+<!-- Tracking + zgoda na cookies (CMP): piksele startują DOPIERO po zgodzie -->
+<script>
+(function () {
+  var CONSENT_KEY = 'pw_consent';   // 'granted' | 'denied'
+  var started = false;
+
+  // Piksele Meta/TikTok/GA4 — odpalane TYLKO po zgodzie (i tylko gdy ID ustawione)
+  function pwInitPixels() {
+    if (started) return; started = true;
+    var PW = window.PW || {};
+    if (PW.META_PIXEL_ID) {
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', PW.META_PIXEL_ID); fbq('track', 'PageView');
+    }
+    if (PW.TIKTOK_PIXEL_ID) {
+      !function (w, d, t) {
+        w.TiktokAnalyticsObject = t; var ttq = w[t] = w[t] || [];
+        ttq.methods = ["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"];
+        ttq.setAndDefer = function (t, e) { t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } };
+        for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
+        ttq.instance = function (t) { for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]); return e };
+        ttq.load = function (e, n) { var r = "https://analytics.tiktok.com/i18n/pixel/events.js", o = n && n.partner; ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = r, ttq._t = ttq._t || {}, ttq._t[e] = +new Date, ttq._o = ttq._o || {}, ttq._o[e] = n || {}; var s = d.createElement("script"); s.type = "text/javascript", s.async = !0, s.src = r + "?sdkid=" + e + "&lib=" + t; var a = d.getElementsByTagName("script")[0]; a.parentNode.insertBefore(s, a) };
+        ttq.load(PW.TIKTOK_PIXEL_ID); ttq.page();
+      }(window, document, 'ttq');
+    }
+    if (PW.GA4_ID) {
+      var s = document.createElement('script'); s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + PW.GA4_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { dataLayer.push(arguments) };
+      gtag('js', new Date()); gtag('config', PW.GA4_ID);
+    }
+  }
+
+  // pwTrack: jedno API zdarzeń → Meta + TikTok + GA4 (no-op bez zgody/pikseli)
+  window.pwTrack = function (event, params) {
+    params = params || {};
+    try { if (typeof fbq === 'function') {
+      var fbStd = { Lead:1, InitiateCheckout:1, Purchase:1, CompleteRegistration:1 };
+      if (fbStd[event]) fbq('track', event, params); else fbq('trackCustom', event, params);
+    } } catch (e) {}
+    try { if (window.ttq && typeof ttq.track === 'function') {
+      var ttMap = { quiz_start:'ViewContent', Lead:'SubmitForm', InitiateCheckout:'InitiateCheckout', Purchase:'CompletePayment' };
+      ttq.track(ttMap[event] || event, params);
+    } } catch (e) {}
+    try { if (typeof gtag === 'function') {
+      var gaMap = { quiz_start:'quiz_start', Lead:'generate_lead', InitiateCheckout:'begin_checkout', Purchase:'purchase' };
+      gtag('event', gaMap[event] || event, params);
+    } } catch (e) {}
+  };
+
+  // ── Zgoda na cookies ──
+  function getC() { try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; } }
+  function setC(v) { try { localStorage.setItem(CONSENT_KEY, v); } catch (e) {} }
+  window.pwSetConsent = function (v) { setC(v); hide(); if (v === 'granted') pwInitPixels(); };
+  window.pwOpenConsent = function () { show(); };   // np. link „Ustawienia cookies" w stopce
+
+  var el = null;
+  function build() {
+    if (el) return el;
+    var st = document.createElement('style');
+    st.textContent =
+      '.pwc{position:fixed;left:0;right:0;bottom:0;z-index:300;background:rgba(13,13,13,.98);' +
+      'border-top:1px solid #262626;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);' +
+      'padding:18px 16px;padding-bottom:calc(18px + env(safe-area-inset-bottom));' +
+      'font-family:Manrope,system-ui,sans-serif;color:#a8a8a8;}' +
+      '.pwc-in{max-width:1180px;margin:0 auto;display:flex;gap:16px 24px;align-items:center;' +
+      'justify-content:space-between;flex-wrap:wrap;}' +
+      '.pwc-tx{font-size:13px;line-height:1.5;max-width:64ch;}' +
+      '.pwc-tx b{color:#f4f4f4;}.pwc-tx a{color:#ff4d5e;text-decoration:underline;}' +
+      '.pwc-ac{display:flex;gap:10px;flex-wrap:wrap;}' +
+      '.pwc-b{font-family:Manrope,sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;' +
+      'text-transform:uppercase;padding:11px 22px;border-radius:6px;border:1px solid #333;cursor:pointer;white-space:nowrap;}' +
+      '.pwc-yes{background:#e63946;border-color:#e63946;color:#fff;}' +
+      '.pwc-no{background:transparent;color:#f4f4f4;}' +
+      '@media(max-width:640px){.pwc-ac{width:100%}.pwc-b{flex:1}}';
+    document.head.appendChild(st);
+    el = document.createElement('div');
+    el.className = 'pwc';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-label', 'Zgoda na pliki cookies');
+    el.innerHTML =
+      '<div class="pwc-in"><div class="pwc-tx">Używamy plików cookies. Niezbędne działają zawsze. ' +
+      'Na <b>analitykę i reklamę</b> (Meta, TikTok, Google) — tylko za Twoją zgodą. Szczegóły w ' +
+      '<a href="polityka-prywatnosci.html">Polityce prywatności</a>.</div>' +
+      '<div class="pwc-ac"><button type="button" class="pwc-b pwc-no">Odrzuć</button>' +
+      '<button type="button" class="pwc-b pwc-yes">Akceptuję</button></div></div>';
+    el.querySelector('.pwc-yes').addEventListener('click', function () { window.pwSetConsent('granted'); });
+    el.querySelector('.pwc-no').addEventListener('click', function () { window.pwSetConsent('denied'); });
+    return el;
+  }
+  function show() {
+    var e = build();
+    if (!e.parentNode) {
+      if (document.body) document.body.appendChild(e);
+      else document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(e); });
+    }
+    e.style.display = '';
+  }
+  function hide() { if (el) el.style.display = 'none'; }
+
+  // Start: zgoda już zapisana → uszanuj ją; brak decyzji → pokaż baner
+  var c = getC();
+  if (c === 'granted') pwInitPixels();
+  else if (c !== 'denied') {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', show);
+    else show();
+  }
+})();
+</script>
+
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-2: #121212;
+    --bg-3: #181818;
+    --line: #262626;
+    --line-2: #333;
+    --text: #f4f4f4;
+    --text-2: #a8a8a8;
+    --muted: #6e6e6e;
+    --accent: #e63946;
+    --accent-2: #ff4d5e;
+    --accent-soft: rgba(230,57,70,.12);
+    --ok: #22c55e;
+    --r-sm: 6px;
+    --r-md: 10px;
+    --r-lg: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  img { max-width: 100%; display: block; }
+
+  .sq {
+    width: 100%;
+    max-width: 520px;
+    padding: 32px 22px 28px;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-lg);
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(230,57,70,.12), transparent 55%),
+      var(--bg-2);
+    box-shadow: 0 40px 90px -30px rgba(0,0,0,.9), 0 0 0 1px rgba(230,57,70,.12);
+  }
+
+  .sq-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+  .sq-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+
+  .sq h1 {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    letter-spacing: .01em;
+    text-transform: uppercase;
+    font-size: clamp(28px, 8vw, 42px);
+    line-height: 1.02;
+    margin: 14px 0 14px;
+  }
+  .sq h1 .accent { color: var(--accent); }
+  .sq-lead { color: var(--text-2); font-size: 16px; margin: 0 0 20px; }
+
+  .sq-list { list-style: none; margin: 0 0 24px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .sq-list li { position: relative; padding-left: 28px; font-size: 15px; color: var(--text); }
+  .sq-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+  }
+
+  .sq-label { display: block; font-size: 14px; color: var(--text-2); margin-bottom: 12px; }
+  .sq-label b { color: var(--text); }
+  .sq-form { display: flex; flex-direction: column; gap: 10px; margin: 0; }
+  .sq-input {
+    width: 100%;
+    min-width: 0;
+    padding: 14px 16px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-sm);
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+  }
+  .sq-input::placeholder { color: var(--muted); }
+  .sq-input:focus { outline: none; border-color: var(--accent); }
+
+  .sq-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px 22px;
+    border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    background: var(--accent);
+    color: #fff;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 10px 30px -8px rgba(230,57,70,.4);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .sq-btn:hover { transform: translateY(-1px); box-shadow: 0 0 0 4px rgba(230,57,70,.18), 0 18px 40px -10px rgba(230,57,70,.6); }
+  .sq-arrow { transition: transform .2s; }
+  .sq-btn:hover .sq-arrow { transform: translateX(3px); }
+
+  .sq-err { display: none; margin: 10px 0 0; color: var(--accent-2); font-size: 13px; }
+  .sq-err.show { display: block; }
+  .sq-note { margin: 14px 0 0; font-size: 12px; color: var(--muted); }
+
+  .sq-done { text-align: center; }
+  .sq-check {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: var(--ok);
+    color: #04130a;
+    display: grid;
+    place-items: center;
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+  @media (min-width: 560px) {
+    .sq { padding: 40px 36px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<main class="sq" role="main">
+  <div id="sq-form-view">
+    <span class="sq-eyebrow"><span class="sq-dot"></span>Darmowy plan · PDF</span>
+    <h1>7-dniowy <span class="accent">Detoks Dopaminowy</span></h1>
+    <p class="sq-lead">Krótki, konkretny protokół, który wyrywa Cię z pętli scrollowania i oddaje Ci kontrolę nad uwagą. Zero teorii — same kroki na każdy dzień.</p>
+
+    <ul class="sq-list">
+      <li>Plan na każdy z 7 dni — wiesz dokładnie, co robić.</li>
+      <li>Jak ustawić telefon, żeby przestał kraść Twój czas.</li>
+      <li>Pierwszy krok Planu Wojownika, żeby ruszyć od razu.</li>
+    </ul>
+
+    <form class="sq-form" id="sqForm" novalidate>
+      <label class="sq-label" for="sqName">Podaj imię i e-mail — wyślę Ci <b>detoks od razu, za darmo.</b></label>
+      <input class="sq-input" type="text" id="sqName" name="name" placeholder="Imię" required autocomplete="given-name">
+      <input class="sq-input" type="email" id="sqEmail" name="email" placeholder="twoj@email.pl" required autocomplete="email" inputmode="email">
+      <button type="submit" class="sq-btn">Wyślij mi detoks <span class="sq-arrow" aria-hidden="true">→</span></button>
+      <p class="sq-err" id="sqErr" role="alert">Podaj imię oraz poprawny adres e-mail.</p>
+    </form>
+
+    <p class="sq-note">Zero spamu. Wypisujesz się jednym kliknięciem.</p>
+  </div>
+
+  <div id="sq-done-view" class="sq-done" hidden>
+    <div class="sq-check" aria-hidden="true">✓</div>
+    <h1>Sprawdź <span class="accent">skrzynkę.</span></h1>
+    <p class="sq-lead">Detoks leci na Twojego maila. Zacznij od dnia pierwszego jeszcze dziś — a potem zobacz, co dostajesz w pełnym Planie Wojownika.</p>
+    <a class="sq-btn" href="index.html#oferta">Zobacz Plan Wojownika <span class="sq-arrow" aria-hidden="true">→</span></a>
+  </div>
+</main>
+
+<script>
+  // Wspólny zapis leada — identyczny fragment we wszystkich plikach lejka
+  function pwSaveLead(lead) {
+    // Zawsze trzymamy kopię lokalnie (fallback / podgląd).
+    try { localStorage.setItem('pw_lead', JSON.stringify(lead)); } catch (e) {}
+    // Zdarzenie Lead do pikseli (Meta/TikTok/GA4), jeśli tracking jest na stronie.
+    if (window.pwTrack) window.pwTrack('Lead', { content_name: (lead && lead.source) || 'lead' });
+
+    // ── Zapis leada do systemu mailingowego (ESP) ──
+    // TODO: wklej swój endpoint. Bezpiecznie = własny backend / serverless
+    // (np. /api/subscribe) ALBO webhook Zapier/Make, który PO STRONIE SERWERA
+    // wrzuca leada do MailerLite / GetResponse / ActiveCampaign.
+    // NIE wklejaj klucza API ESP w tym pliku — byłby jawny w przeglądarce.
+    var LEAD_ENDPOINT = ''; // <-- TODO: np. '/api/subscribe' lub URL webhooka
+    if (!LEAD_ENDPOINT) return;
+    return fetch(LEAD_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lead)
+    }).catch(function () {});
+  }
+
+  (function () {
+    var form = document.getElementById('sqForm');
+    var nameInput = document.getElementById('sqName');
+    var emailInput = document.getElementById('sqEmail');
+    var err = document.getElementById('sqErr');
+    var formView = document.getElementById('sq-form-view');
+    var doneView = document.getElementById('sq-done-view');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = nameInput.value.trim();
+      var email = emailInput.value.trim();
+      var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (name.length < 2 || !emailOk) {
+        err.textContent = (name.length < 2)
+          ? 'Podaj swoje imię (min. 2 znaki).'
+          : 'Podaj poprawny adres e-mail.';
+        err.classList.add('show');
+        (name.length < 2 ? nameInput : emailInput).focus();
+        return;
+      }
+      err.classList.remove('show');
+
+      var lead = {
+        name: name,
+        email: email,
+        source: 'detoks-squeeze',
+        magnet: '7-dniowy Detoks Dopaminowy',
+        enemy: null,
+        answers: [],
+        ts: Date.now()
+      };
+      pwSaveLead(lead);
+
+      formView.hidden = true;
+      doneView.hidden = false;
+    });
+  })();
+</script>
+
+</body>
+</html>

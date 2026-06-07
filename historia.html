@@ -1,0 +1,1191 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Historia Michała — Plan Wojownika</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Jak Michał przeszedł z 105 kg, uzależnienia od TikToka i wstydu — do 85 kg, 3 wygranych walk MMA i własnego programu transformacji.">
+<link rel="canonical" href="https://planwojownika.pl/historia.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PLAN WOJOWNIKA — KONFIGURACJA + TRACKING  (ten sam blok co w index.html)
+     Uzupełnij wartości oznaczone TODO. Puste = funkcja nieaktywna.
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+  window.PW = {
+    CHECKOUT_URL: '',      // TODO: URL checkoutu (Przelewy24 / Stripe)
+    META_PIXEL_ID: '',     // TODO: np. '1234567890123456'
+    TIKTOK_PIXEL_ID: '',   // TODO: np. 'CXXXXXXXXXXXXXXXXX'
+    GA4_ID: '',            // TODO: np. 'G-XXXXXXXXXX'
+    PRICE: 349,
+    CURRENCY: 'PLN'
+  };
+</script>
+
+<!-- Tracking + zgoda na cookies (CMP): piksele startują DOPIERO po zgodzie -->
+<script>
+(function () {
+  var CONSENT_KEY = 'pw_consent';   // 'granted' | 'denied'
+  var started = false;
+
+  // Piksele Meta/TikTok/GA4 — odpalane TYLKO po zgodzie (i tylko gdy ID ustawione)
+  function pwInitPixels() {
+    if (started) return; started = true;
+    var PW = window.PW || {};
+    if (PW.META_PIXEL_ID) {
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', PW.META_PIXEL_ID); fbq('track', 'PageView');
+    }
+    if (PW.TIKTOK_PIXEL_ID) {
+      !function (w, d, t) {
+        w.TiktokAnalyticsObject = t; var ttq = w[t] = w[t] || [];
+        ttq.methods = ["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"];
+        ttq.setAndDefer = function (t, e) { t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } };
+        for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
+        ttq.instance = function (t) { for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]); return e };
+        ttq.load = function (e, n) { var r = "https://analytics.tiktok.com/i18n/pixel/events.js", o = n && n.partner; ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = r, ttq._t = ttq._t || {}, ttq._t[e] = +new Date, ttq._o = ttq._o || {}, ttq._o[e] = n || {}; var s = d.createElement("script"); s.type = "text/javascript", s.async = !0, s.src = r + "?sdkid=" + e + "&lib=" + t; var a = d.getElementsByTagName("script")[0]; a.parentNode.insertBefore(s, a) };
+        ttq.load(PW.TIKTOK_PIXEL_ID); ttq.page();
+      }(window, document, 'ttq');
+    }
+    if (PW.GA4_ID) {
+      var s = document.createElement('script'); s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + PW.GA4_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { dataLayer.push(arguments) };
+      gtag('js', new Date()); gtag('config', PW.GA4_ID);
+    }
+  }
+
+  // pwTrack: jedno API zdarzeń → Meta + TikTok + GA4 (no-op bez zgody/pikseli)
+  window.pwTrack = function (event, params) {
+    params = params || {};
+    try { if (typeof fbq === 'function') {
+      var fbStd = { Lead:1, InitiateCheckout:1, Purchase:1, CompleteRegistration:1 };
+      if (fbStd[event]) fbq('track', event, params); else fbq('trackCustom', event, params);
+    } } catch (e) {}
+    try { if (window.ttq && typeof ttq.track === 'function') {
+      var ttMap = { quiz_start:'ViewContent', Lead:'SubmitForm', InitiateCheckout:'InitiateCheckout', Purchase:'CompletePayment' };
+      ttq.track(ttMap[event] || event, params);
+    } } catch (e) {}
+    try { if (typeof gtag === 'function') {
+      var gaMap = { quiz_start:'quiz_start', Lead:'generate_lead', InitiateCheckout:'begin_checkout', Purchase:'purchase' };
+      gtag('event', gaMap[event] || event, params);
+    } } catch (e) {}
+  };
+
+  // ── Zgoda na cookies ──
+  function getC() { try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; } }
+  function setC(v) { try { localStorage.setItem(CONSENT_KEY, v); } catch (e) {} }
+  window.pwSetConsent = function (v) { setC(v); hide(); if (v === 'granted') pwInitPixels(); };
+  window.pwOpenConsent = function () { show(); };   // np. link „Ustawienia cookies" w stopce
+
+  var el = null;
+  function build() {
+    if (el) return el;
+    var st = document.createElement('style');
+    st.textContent =
+      '.pwc{position:fixed;left:0;right:0;bottom:0;z-index:300;background:rgba(13,13,13,.98);' +
+      'border-top:1px solid #262626;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);' +
+      'padding:18px 16px;padding-bottom:calc(18px + env(safe-area-inset-bottom));' +
+      'font-family:Manrope,system-ui,sans-serif;color:#a8a8a8;}' +
+      '.pwc-in{max-width:1180px;margin:0 auto;display:flex;gap:16px 24px;align-items:center;' +
+      'justify-content:space-between;flex-wrap:wrap;}' +
+      '.pwc-tx{font-size:13px;line-height:1.5;max-width:64ch;}' +
+      '.pwc-tx b{color:#f4f4f4;}.pwc-tx a{color:#ff4d5e;text-decoration:underline;}' +
+      '.pwc-ac{display:flex;gap:10px;flex-wrap:wrap;}' +
+      '.pwc-b{font-family:Manrope,sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;' +
+      'text-transform:uppercase;padding:11px 22px;border-radius:6px;border:1px solid #333;cursor:pointer;white-space:nowrap;}' +
+      '.pwc-yes{background:#e63946;border-color:#e63946;color:#fff;}' +
+      '.pwc-no{background:transparent;color:#f4f4f4;}' +
+      '@media(max-width:640px){.pwc-ac{width:100%}.pwc-b{flex:1}}';
+    document.head.appendChild(st);
+    el = document.createElement('div');
+    el.className = 'pwc';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-label', 'Zgoda na pliki cookies');
+    el.innerHTML =
+      '<div class="pwc-in"><div class="pwc-tx">Używamy plików cookies. Niezbędne działają zawsze. ' +
+      'Na <b>analitykę i reklamę</b> (Meta, TikTok, Google) — tylko za Twoją zgodą. Szczegóły w ' +
+      '<a href="polityka-prywatnosci.html">Polityce prywatności</a>.</div>' +
+      '<div class="pwc-ac"><button type="button" class="pwc-b pwc-no">Odrzuć</button>' +
+      '<button type="button" class="pwc-b pwc-yes">Akceptuję</button></div></div>';
+    el.querySelector('.pwc-yes').addEventListener('click', function () { window.pwSetConsent('granted'); });
+    el.querySelector('.pwc-no').addEventListener('click', function () { window.pwSetConsent('denied'); });
+    return el;
+  }
+  function show() {
+    var e = build();
+    if (!e.parentNode) {
+      if (document.body) document.body.appendChild(e);
+      else document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(e); });
+    }
+    e.style.display = '';
+  }
+  function hide() { if (el) el.style.display = 'none'; }
+
+  // Start: zgoda już zapisana → uszanuj ją; brak decyzji → pokaż baner
+  var c = getC();
+  if (c === 'granted') pwInitPixels();
+  else if (c !== 'denied') {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', show);
+    else show();
+  }
+})();
+</script>
+
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-2: #121212;
+    --bg-3: #181818;
+    --line: #262626;
+    --line-2: #333;
+    --text: #f4f4f4;
+    --text-2: #a8a8a8;
+    --muted: #6e6e6e;
+    --accent: #e63946;
+    --accent-2: #ff4d5e;
+    --accent-soft: rgba(230,57,70,.12);
+    --ok: #22c55e;
+    --gold: #d4af37;
+    --r-sm: 6px;
+    --r-md: 10px;
+    --r-lg: 16px;
+    --maxw: 740px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+  body { overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+
+  .display {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    letter-spacing: .01em;
+    line-height: .95;
+    text-transform: uppercase;
+  }
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  /* NAV */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(10,10,10,.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+    border: 1.5px solid var(--accent);
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    color: var(--accent);
+  }
+  .brand-logo { height: 44px; width: auto; display: block; }
+  .back-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+    transition: color .2s;
+  }
+  .back-link:hover { color: var(--text); }
+  .back-link svg { width: 16px; height: 16px; }
+
+  /* ARTICLE */
+  article {
+    padding: 80px 0 120px;
+  }
+
+  .article-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .article-title {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: .95;
+    letter-spacing: .01em;
+    margin: 0 0 32px;
+  }
+  .article-title .red { color: var(--accent); }
+
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-2);
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+  }
+  .article-meta .dot {
+    width: 3px;
+    height: 3px;
+    background: var(--muted);
+    border-radius: 50%;
+  }
+
+  .story-img {
+    border-radius: var(--r-md);
+    border: 1px solid var(--line);
+    width: 100%;
+    margin: 48px 0;
+    object-fit: cover;
+    max-height: 500px;
+  }
+  .story-img-caption {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: -36px;
+    margin-bottom: 48px;
+  }
+
+  article p {
+    margin: 0 0 24px;
+    color: var(--text-2);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+  article p b, article p strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  article h2 {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(24px, 4vw, 36px);
+    line-height: 1;
+    letter-spacing: .01em;
+    color: var(--text);
+    margin: 64px 0 20px;
+  }
+  article h2 .red { color: var(--accent); }
+
+  .pull-quote {
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 4px 24px;
+    margin: 48px 0;
+  }
+  .pull-quote q {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.45;
+    font-style: normal;
+    quotes: none;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin: 48px 0;
+  }
+  .stat-box {
+    text-align: center;
+  }
+  .stat-ic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .stat-ic svg {
+    width: 40px;
+    height: 40px;
+    display: block;
+    color: var(--text-2);
+  }
+  .stat-box b {
+    display: block;
+    font-size: 36px;
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-box span {
+    font-size: 12px;
+    color: var(--text-2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  .chapter-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid rgba(230,57,70,.25);
+    border-radius: var(--r-sm);
+    padding: 4px 10px;
+    margin-bottom: 12px;
+  }
+
+  .timeline {
+    border-left: 2px solid var(--line);
+    padding-left: 28px;
+    margin: 48px 0;
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 40px;
+  }
+  .timeline-item:last-child { margin-bottom: 0; }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -35px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+  }
+  .timeline-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .timeline-item h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 8px;
+  }
+  .timeline-item p {
+    font-size: 15px;
+    margin: 0;
+  }
+
+  .cta-box {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 48px 40px;
+    text-align: center;
+    margin-top: 80px;
+  }
+  .cta-box .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .cta-box h2 {
+    margin: 0 0 16px;
+    font-size: clamp(28px, 5vw, 42px);
+  }
+  .cta-box p {
+    max-width: 480px;
+    margin: 0 auto 32px;
+    font-size: 16px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    border-radius: var(--r-md);
+    border: none;
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: var(--accent-2);
+    transform: translateY(-1px);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1.5px solid var(--line-2);
+  }
+  .btn-ghost:hover {
+    border-color: var(--text-2);
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 56px 0;
+  }
+
+  .photo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 48px 0 8px;
+  }
+  .photo-grid img {
+    border-radius: var(--r-md);
+    border: 1px solid var(--line);
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+  }
+  .photo-grid-caption {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .photo-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 40px 0 8px;
+  }
+  .photo-grid-4 img {
+    border-radius: var(--r-md);
+    border: 1px solid var(--line);
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    filter: grayscale(.45) brightness(.88);
+    transition: filter .4s ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .photo-grid-4 img:hover { filter: none; }
+  }
+
+  @media (max-width: 600px) {
+    .photo-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .stats-row { gap: 16px; }
+    .cta-box { padding: 36px 24px; }
+  }
+
+  /* ── INLINE CTA BLOCKS ── */
+  .cta-inline {
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,0,0,.2);
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    margin: 48px 0;
+  }
+  .cta-open {
+    text-align: center;
+    margin: 48px 0;
+    padding: 32px 0;
+  }
+  article p.cta-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+    line-height: 1.4;
+  }
+  article .cta-heading {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 10px;
+    line-height: 1.3;
+  }
+  article .cta-heading-lg {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 10px;
+    line-height: 1.3;
+  }
+  article p.cta-sub {
+    color: var(--text-2);
+    font-size: 15px;
+    margin: 0 0 24px;
+    line-height: 1.65;
+  }
+  .cta-btn-story {
+    display: inline-block;
+    background: #E53935;
+    color: #fff;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all .2s ease;
+  }
+  .cta-btn-story.md { padding: 16px 40px; font-size: 16px; }
+  .cta-btn-story.lg {
+    padding: 20px 56px;
+    font-size: 18px;
+    box-shadow: 0 4px 20px rgba(229,57,53,.4);
+  }
+  .cta-btn-story:hover { background: #C62828; transform: scale(1.02); }
+  article p.cta-fine {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 16px 0 0;
+    line-height: 1.5;
+  }
+  .cta-trust {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--text-2);
+    flex-wrap: wrap;
+  }
+  @media (max-width: 768px) {
+    .cta-btn-story.md { padding: 14px 28px; font-size: 14px; }
+    .cta-btn-story.lg { padding: 14px 28px; font-size: 16px; }
+    article .cta-heading { font-size: 20px; }
+    article .cta-heading-lg { font-size: 23px; }
+  }
+
+  /* ── ZMIANA 2: Koszt braku działania ── */
+  .cost-block {
+    background: rgba(230,57,70,.05);
+    border: 1px solid rgba(230,57,70,.18);
+    border-radius: var(--r-md);
+    padding: 28px 32px;
+    margin: 32px 0;
+  }
+  article p.cost-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+    line-height: 1.4;
+  }
+  .cost-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cost-list li {
+    color: var(--text-2);
+    font-size: 15px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    line-height: 1.5;
+  }
+  .cost-list li:last-child { border-bottom: none; }
+
+  /* ── ZMIANA 3: Future-pacing ── */
+  .future-box {
+    background: rgba(255,255,255,.02);
+    border: 1px solid var(--line-2);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--r-md);
+    padding: 32px;
+    margin: 48px 0;
+  }
+  article p.future-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 10px;
+    line-height: 1.4;
+  }
+  .future-heading {
+    font-family: 'Anton', sans-serif;
+    font-size: 30px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: .01em;
+    color: var(--text);
+    line-height: 1;
+    margin: 0 0 16px;
+  }
+  .future-box p { font-size: 16px; margin: 0 0 12px; }
+  .future-box p:last-child { margin-bottom: 0; }
+
+  /* ── ZMIANA 4: Brain block ── */
+  .brain-block {
+    background: rgba(255,255,255,.02);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 28px 32px;
+    margin: 48px 0;
+    text-align: center;
+  }
+  article p.brain-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin: 0 0 14px;
+    line-height: 1.4;
+  }
+  .brain-block p { font-size: 15px; margin: 0 0 12px; }
+  .brain-block p:last-child { margin-bottom: 0; }
+  .brain-block strong { color: var(--text); }
+
+  /* ── ZMIANA 5: Dual timeline ── */
+  .timeline-dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+    margin: 48px 0;
+  }
+  .timeline-col-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .timeline { margin: 0; }
+  .timeline-yours { border-left-color: var(--accent); }
+  .timeline-yours .timeline-item::before {
+    background: var(--accent);
+    border-color: var(--bg);
+  }
+  .timeline-yours .timeline-date { color: var(--text); }
+  @media (max-width: 640px) {
+    .timeline-dual { grid-template-columns: 1fr; gap: 24px; }
+  }
+
+  /* ── ZMIANA 6: Micro-commitment CTA ── */
+  .cta-commit {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 48px 40px;
+    text-align: center;
+    margin-top: 80px;
+  }
+  .cta-commit .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .cta-commit h2 { margin: 0 0 16px; font-size: clamp(28px, 5vw, 42px); }
+  .cta-commit p { max-width: 480px; margin: 0 auto 24px; font-size: 16px; color: var(--text-2); }
+  #commit-s1, #commit-s2 { transition: opacity .3s ease; }
+  .commit-name-input {
+    background: var(--bg-3);
+    border: 1.5px solid var(--line-2);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    font-size: 16px;
+    padding: 14px 20px;
+    border-radius: var(--r-md);
+    width: 220px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .commit-name-input:focus { border-color: var(--accent); }
+  .cta-commit .commit-err {
+    display: none;
+    margin: 0 auto 14px;
+    max-width: none;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .cta-commit .commit-err.show { display: block; }
+  @media (max-width: 540px) {
+    .cta-commit { padding: 36px 20px; }
+    .commit-name-input { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Nawigacja">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="Plan Wojownika — strona główna">
+      <img src="logo.jpg" alt="Plan Wojownika" class="brand-logo">
+    </a>
+    <a href="index.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M10 4L6 8l4 4"/>
+      </svg>
+      Wróć do strony głównej
+    </a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <article>
+
+      <span class="article-eyebrow">Historia twórcy</span>
+      <h1 class="article-title display">Jak odbiłem się<br>od <span class="red">samego dna.</span></h1>
+
+      <div class="article-meta">
+        <span>Michał — twórca Planu Wojownika</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>3 min czytania</span>
+      </div>
+
+      <span class="chapter-tag">Prolog — Zanim to wszystko</span>
+      <h2 class="display">Przez 8 lat<br><span class="red">byłem sportowcem.</span></h2>
+
+      <p>Jest 23:47. Siedzisz przy telefonie i przewijasz. Może to Instagram, może YouTube — nie ma znaczenia. Wiesz, że powinieneś już spać. Wiesz, że jutro zaczniesz ten sam dzień co wczoraj. I gdzieś głęboko czujesz — że to nie jest życie, które miałeś prowadzić.</p>
+
+      <p>Znam to uczucie. Przez kilka lat byłem tym facetem.</p>
+
+      <p>Mam na imię Michał. I zanim opowiem ci jak wyszedłem z tego miejsca — chcę ci powiedzieć skąd spadłem.</p>
+
+      <hr class="divider">
+
+      <p>Przez 8 lat grałem w piłkę nożną. Treningi 4 razy w tygodniu, mecze w weekendy, zimne poranki na boisku gdy inni jeszcze spali. Byłem chudy, sprawny, miałem cel i drużynę, która na mnie czekała. <strong>Miałem strukturę. Miałem odpowiedzialność. Miałem tożsamość.</strong></p>
+
+      <p>Nikt nie mówił mi wtedy, żebym ćwiczył — po prostu to robiłem. Bo tak wyglądało moje życie.</p>
+
+      <div class="photo-grid">
+        <img src="fd71b6e2-1b2c-4105-b638-3a6778265bd9.jpg" alt="Michał w czasach piłki nożnej — chudy i aktywny">
+        <img src="85149593-0706-49f4-9433-c08b53cec631.jpg" alt="Michał na boisku — lata aktywności">
+      </div>
+      <p class="photo-grid-caption">Czasy piłki. Chudy, aktywny, z celem.</p>
+
+      <p>A potem piłka się skończyła. Kontuzja, zmiana planów, inne priorytety — tak to zawsze wygląda. <strong>I nagle znikła struktura, która trzymała mnie w ryzach.</strong> Bez treningów. Bez drużyny. Bez terminarza meczów.</p>
+
+      <p>W ciągu kilku lat przytyłem 30 kilogramów. Nie jednym skokiem — powoli, kilogram po kilogramie. Tak powoli, że prawie tego nie zauważyłem. Aż pewnego dnia spojrzałem w lustro i nie poznałem tej osoby.</p>
+
+      <div class="pull-quote">
+        <q>Nie stałem się gruby przez lenistwo. Straciłem system, który sprawiał, że byłem aktywny — i nie miałem nic w zamian.</q>
+      </div>
+
+      <hr class="divider">
+
+      <img
+        src="9dcefbd1-a21c-499c-936f-e99e11af71df.jpg"
+        alt="Michał — zdjęcie przed transformacją, 105 kg, 2024"
+        class="story-img"
+      >
+      <p class="story-img-caption">Styczeń 2024. 105 kg, 10 godzin TikToka dziennie.</p>
+
+      <span class="chapter-tag">Rozdział 1 — Dno</span>
+      <h2 class="display">Żyłem<br><span class="red">nie swoim życiem.</span></h2>
+
+      <p>105 kilogramów. Telefon w ręku przez 10 godzin dziennie — z czego TikTok zajmował ponad 7. Alkohol w weekendy, papierosy „żeby się odstresować", imprezy, bo co innego? <strong>Rodzina wstydziła się za mnie — a ich wstyd bolał najbardziej. Sam też się siebie wstydziłem.</strong></p>
+
+      <p>Każdego ranka budziłem się z tym samym uczuciem: że zmarnowałem poprzedni dzień i zmarnuję też dzisiejszy. Scrollowałem, zanim wstałem z łóżka. Oglądałem jak inni trenują, zamiast samemu trenować. Widziałem jak inni budują życie — i zamiast się zainspirować, czułem się jeszcze gorzej.</p>
+
+      <div class="pull-quote">
+        <q>Wiedziałem, że marnuję życie. Ale „wiedzieć" i „zmienić" to dwie kompletnie różne rzeczy — dopóki nie zrozumiesz dlaczego.</q>
+      </div>
+
+      <p>Problem nie był w tym, że byłem leniwy. Problem był w tym, że przez lata wbudowałem w siebie system, który działał przeciwko mnie. TikTok i Instagram zaprojektowane są tak, żebyś nigdy nie skończył. Alkohol daje chwilowy spokój — i bierze dwa razy tyle energii następnego dnia. Imprezy dają poczucie bycia w grupie — i zostawiają pustkę w poniedziałek rano.</p>
+
+      <p>Nie byłem słaby. Wpadłem <strong>w pułapkę systemu, który udawał, że mi służy.</strong></p>
+
+      <div class="photo-grid-4">
+        <img src="e5bceb71-df04-4d49-b225-33c04f543865.jpg" alt="Czasy przytycia — dno">
+        <img src="d3100be3-740f-47c1-b898-ae4bcc9061a2.jpg" alt="Czasy przytycia — dno">
+        <img src="88a24031-a08a-4f48-af88-54d087beb5e5.jpg" alt="Czasy przytycia — dno">
+        <img src="6476618c-9b2c-4f52-a499-b0ec5bfe02ce.jpg" alt="Czasy przytycia — dno">
+        <img src="a2aa829c-3926-4e20-8572-c49c71813269.jpg" alt="Czasy przytycia — dno">
+        <img src="d1040da7-c526-4019-b6e7-2f69ebff3e5d.jpg" alt="Czasy przytycia — dno">
+        <img src="2d2c990c-a2d1-442c-ad9e-56a5e9b6e666.jpg" alt="Czasy przytycia — dno">
+        <img src="3d45243b-b8c8-4244-af77-823044e42168.jpg" alt="Czasy przytycia — dno">
+      </div>
+      <p class="photo-grid-caption">2018–2024. Tak wyglądało moje dno.</p>
+
+      <div class="cost-block">
+        <p class="cost-label">Każdy rok bez zmiany kosztuje cię:</p>
+        <ul class="cost-list">
+          <li>→ <strong>Kolejne kilogramy</strong>, które z każdym rokiem będzie coraz trudniej zrzucić.</li>
+          <li>→ <strong>Stracone lata</strong>, w których nie jesteś facetem, jakim zawsze chciałeś być.</li>
+          <li>→ <strong>Zdrowie</strong>, którego po 35. roku życia nie odbudujesz już tak łatwo.</li>
+          <li>→ szacunek do siebie — który ucieka z każdym odpuszczonym dniem</li>
+          <li>→ relacje z ludźmi, którzy widzą że nie dajesz z siebie wszystkiego</li>
+        </ul>
+      </div>
+
+      <div class="cta-inline">
+        <p class="cta-tag">Rozpoznajesz się w tym?</p>
+        <h3 class="cta-heading">Byłem dokładnie tam gdzie ty jesteś teraz.</h3>
+        <p class="cta-sub">I wyszedłem. System który mi pomógł —<br>masz teraz przed sobą.</p>
+        <a href="index.html#oferta" class="cta-btn-story md">ZBUDUJ SWÓJ SYSTEM TERAZ →</a>
+        <p class="cta-fine">349 zł · Gwarancja zwrotu 30 dni · Dostęp w 60 sekund</p>
+      </div>
+
+      <hr class="divider">
+
+      <span class="chapter-tag">Rozdział 2 — Punkt zwrotny</span>
+      <h2 class="display">Jedna<br><span class="red">decyzja.</span></h2>
+
+      <p>Nie pamiętam dokładnej daty. Pamiętam moment. Siedziałem późno w nocy, fastfood obok, scrollowałem filmiki motywacyjne — i nagle dotarło do mnie jak absurdalne jest to, co robię. <strong>Oglądałem, jak inni działają, zamiast samemu działać.</strong></p>
+
+      <p>Nie powiedziałem sobie „od poniedziałku". Nie czekałem na „dobry moment". Zamknąłem telefon. Wstałem. I następnego ranka — po raz pierwszy od miesięcy — poszedłem biegać.</p>
+
+      <p>To nie był moment objawienia. Nie czułem się jak bohater. Czułem się jak ktoś, kto ledwo wytrzymał 15 minut truchtu i musiał się zatrzymać. <strong>Ale zrobiłem to.</strong></p>
+
+      <p>I następnego dnia znowu.</p>
+
+      <p>I następnego.</p>
+
+      <hr class="divider">
+
+      <span class="chapter-tag">Rozdział 3 — System</span>
+      <h2 class="display">Nie siła woli.<br><span class="red">System.</span></h2>
+
+      <p>Przez pierwsze tygodnie dużo się przewracałem. Opuściłem treningi. Wróciłem do telefonu. Zjadłem fastfood w środku „diety". To normalne — i to właśnie wtedy większość ludzi odpuszcza i mówi sobie „nie nadaję się".</p>
+
+      <p>Ja zrozumiałem coś innego: <strong>problem nie jest w motywacji. Problem jest w braku systemu.</strong></p>
+
+      <p>Zacząłem badać co sprawia, że zmiany są trwałe. Czytałem, eksperymentowałem na sobie, notowałem co działa, a co nie. Odkryłem, że kluczem nie jest siła woli — bo siła woli się wyczerpuje. Kluczem jest zaprojektowanie środowiska tak, żeby dobre wybory były łatwiejsze niż złe.</p>
+
+      <p>Zamiast ograniczać TikToka siłą woli — usunąłem apkę. Zamiast „starać się nie pić" — przestałem chodzić w miejsca, gdzie wszyscy piją. Zamiast „motywować się do treningów" — kupiłem karnet i umówiłem się z ziomem na konkretne godziny.</p>
+
+      <div class="pull-quote">
+        <q>Środowisko jest silniejsze niż charakter. Zmień środowisko — zmienisz siebie.</q>
+      </div>
+
+      <p>W ciągu 5 miesięcy straciłem 20 kilogramów. Nie dlatego, że odkryłem magiczną dietę. Dlatego, że <strong>zbudowałem system, który działał za mnie, a nie przeciwko mnie.</strong></p>
+
+      <hr class="divider">
+
+      <span class="chapter-tag">Rozdział 4 — MMA i prawdziwy test</span>
+      <h2 class="display">Wróg<br><span class="red">w klatce.</span></h2>
+
+      <p>Trening siłowy zmienił ciało. Ale MMA zmieniło głowę.</p>
+
+      <p>Pierwszy raz stanąłem do sparingu i dostałem po twarzy. Serio — dosłownie. I wiecie co? Poczułem się żywy. Po raz pierwszy od lat naprawdę <strong>byłem w tej chwili</strong>, nie scrollowałem w tle.</p>
+
+      <p>MMA nauczyło mnie, że strach jest informacją, nie rozkazem. Że ból mija, a rezygnacja zostaje. Że najgorszy scenariusz rzadko jest tak straszny jak go sobie wyobrażamy.</p>
+
+      <p>Trzy walki. Trzy zwycięstwa. Każda z nich nauczyła mnie czegoś, czego żaden kurs online by nie nauczył.</p>
+
+      <div class="photo-grid">
+        <img src="bcc95b80-fe33-446c-b767-7bf25000b4b6.jpg" alt="Michał w klatce MMA — kask, rękawice, sylwetka wojownika po transformacji">
+        <img src="IMG_7912.jpeg" alt="Michał od tyłu — rozbudowane plecy i barki po zrzuceniu 20 kg">
+      </div>
+      <p class="photo-grid-caption">2024–2026. −20 kg. Silniejszy niż kiedykolwiek.</p>
+
+      <div class="stats-row" role="list" aria-label="Wyniki transformacji">
+        <div class="stat-box" role="listitem">
+          <span class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 5H19.5V16A3 3 0 0 1 16.5 19H7.5A3 3 0 0 1 4.5 16Z"/><rect x="8" y="7.2" width="8" height="2.6" rx="1.3"/></svg></span>
+          <b>−20 kg</b>
+          <span>w 5 miesięcy</span>
+        </div>
+        <div class="stat-box" role="listitem">
+          <span class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16"/><rect x="5.5" y="9.5" width="2" height="5" rx="1"/><rect x="8.5" y="8" width="2" height="8" rx="1"/><rect x="13.5" y="8" width="2" height="8" rx="1"/><rect x="16.5" y="9.5" width="2" height="5" rx="1"/></svg></span>
+          <b>130 kg</b>
+          <span>wyciskania na klatkę</span>
+        </div>
+        <div class="stat-box" role="listitem">
+          <span class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="4.3" ry="3.2"/><circle cx="12" cy="12" r="1.5"/><path d="M7.7 10L3 11V13L7.7 14"/><path d="M16.3 10L21 11V13L16.3 14"/><circle cx="3" cy="12" r="0.6" fill="currentColor" stroke="none"/><circle cx="21" cy="12" r="0.6" fill="currentColor" stroke="none"/></svg></span>
+          <b>3:0</b>
+          <span>walki MMA</span>
+        </div>
+      </div>
+
+      <div class="cta-open">
+        <p class="cta-tag">Te same wyniki są możliwe dla ciebie</p>
+        <h3 class="cta-heading-lg">To nie był talent.<br>To był system.</h3>
+        <p class="cta-sub">Ten sam system który zabrał mi 20 kg,<br>wycisnął 130 kg i wprowadził do klatki —<br>jest teraz dostępny dla ciebie.</p>
+        <a href="index.html#oferta" class="cta-btn-story lg">ZBUDUJ SWÓJ SYSTEM TERAZ →</a>
+        <div class="cta-trust">
+          <span>🔒 Bezpieczna płatność</span>
+          <span>⚡ Dostęp w 60 sekund</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="future-box">
+        <p class="future-label">01 września 2026 — 90 dni od teraz</p>
+        <h3 class="future-heading">Wyobraź to sobie.</h3>
+        <p>Wstajesz rano — bez alarmu. Ciało cię budzi, bo je szanujesz. Patrzysz w lustro i widzisz kogoś, kogo szanujesz. Rodzina to widzi. Znajomi pytają co się stało. Ty wiesz — i to jest tylko twoje.</p>
+        <p><strong>Za 90 dni możesz być w tym miejscu. Albo za 90 dni możesz być dokładnie tam gdzie jesteś teraz — tyle że 90 dni starszy.</strong></p>
+      </div>
+
+      <hr class="divider">
+
+      <span class="chapter-tag">Rozdział 5 — Dlaczego Plan Wojownika</span>
+      <h2 class="display">Stworzyłem<br><span class="red">to dla ciebie.</span></h2>
+
+      <p>Kiedy przeszedłem przez swoją transformację, zaczęli pytać mnie znajomi: jak to zrobiłeś? Czy możesz mi pomóc?</p>
+
+      <p>Zacząłem pomagać. Jeden na jednego. I zobaczyłem, że te same błędy powtarzają się u każdego. Te same wrogowie: telefon, brak rutyny, brak odpowiedzialności przed nikim, brak jasnego celu.</p>
+
+      <p>Plan Wojownika to <strong>nie jest kolejny kurs fitness.</strong> To system 90 dni, który zaatakuje te same przyczyny, które trzymały mnie w miejscu przez lata. Dieta, trening, ale przede wszystkim — przeprogramowanie środowiska i głowy.</p>
+
+      <p>Nie jestem guru. Nie jestem influencerem. <strong>Jestem facetem, który rok temu był tam, gdzie ty jesteś teraz — i wyszedł.</strong> Dlatego wiem, że to działa.</p>
+
+      <img src="IMG_7925.jpeg" alt="Michał dziś — twórca Planu Wojownika, 85 kg, sylwetka po transformacji" class="story-img" style="object-fit:contain; width:auto; max-width:100%; height:auto; max-height:720px; margin:48px auto;">
+      <p class="story-img-caption">Michał dziś. 85 kg, 3:0 MMA, Plan Wojownika.</p>
+
+      <div class="timeline-dual">
+        <div>
+          <span class="timeline-col-label">Moja historia</span>
+          <div class="timeline" role="list" aria-label="Oś czasu transformacji Michała">
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">2009 – 2017</div>
+              <h3>8 lat piłki nożnej</h3>
+              <p>Chudy, aktywny, z drużyną i celem. Struktura, która działała — dopóki trwała.</p>
+            </div>
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">2018 – 2023</div>
+              <h3>+30 kg bez planu</h3>
+              <p>Koniec piłki, brak zastępnika. Kilogram po kilogramie, rok po roku.</p>
+            </div>
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">Styczeń 2024</div>
+              <h3>Punkt zero</h3>
+              <p>105 kg, 10h TikToka dziennie, alkohol, imprezy. Rodzina się wstydzi.</p>
+            </div>
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">Luty 2024</div>
+              <h3>Pierwsza decyzja</h3>
+              <p>Usuwam TikToka. Biegam po raz pierwszy. 15 minut — ale je kończę.</p>
+            </div>
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">Czerwiec 2024</div>
+              <h3>−20 kg i system działa</h3>
+              <p>85 kg. Siłownia 5x w tygodniu. Pierwsze sparingi MMA.</p>
+            </div>
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">Styczeń 2025</div>
+              <h3>Pierwsza wygrana walka</h3>
+              <p>Trzy walki MMA — trzy zwycięstwa. Rodzina jest ze mnie dumna.</p>
+            </div>
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">Maj 2026</div>
+              <h3>Plan Wojownika</h3>
+              <p>Buduję program oparty na tym, co na mnie zadziałało — żeby działał też na ciebie.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <span class="timeline-col-label" style="color:var(--accent)">Twój timeline — 90 dni</span>
+          <div class="timeline timeline-yours" role="list" aria-label="Twój plan na 90 dni">
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">Dzień 1</div>
+              <h3>Decyzja i kontrakt</h3>
+              <p>Podpisujesz kontrakt ze sobą. Pierwszy raz od lat masz plan — nie życzenie.</p>
+            </div>
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">Tydzień 1</div>
+              <h3>Detoks i reset</h3>
+              <p>Usuwasz rozpraszacze. Telefon idzie do drugiego pokoju. Pierwsze budzenie bez scrolla.</p>
+            </div>
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">Tydzień 2–4</div>
+              <h3>Pierwsze zmiany</h3>
+              <p>Mniej zmęczenia, więcej energii. Siła ciała rośnie. Otoczenie zaczyna pytać co się dzieje.</p>
+            </div>
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">Miesiąc 2</div>
+              <h3>System działa</h3>
+              <p>Trening to nawyk, nie obowiązek. Skupienie wraca na poziom, którego nie pamiętałeś.</p>
+            </div>
+            <div class="timeline-item" role="listitem">
+              <div class="timeline-date">Dzień 90</div>
+              <h3>Nowa tożsamość</h3>
+              <p>Silniejszy. Spokojniejszy. Inny. To już nie jest program — to jesteś ty.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="brain-block">
+        <p class="brain-tag">⚠ Twój mózg właśnie się broni</p>
+        <p>Właśnie pojawiła ci się myśl: <em>„nie dla mnie"</em>, <em>„nie teraz"</em>, <em>„może za miesiąc"</em>. To nie jest twój głos — to mechanizm przetrwania, który przez tysiąclecia chronił nas przed nieznanym. Dziś sabotuje twój rozwój.</p>
+        <p><strong>Pytanie nie brzmi: „czy jesteś gotowy?". Pytanie brzmi: „ile jeszcze chcesz czekać?"</strong></p>
+      </div>
+
+      <div class="cta-commit" id="cta-commit">
+        <div id="commit-s1">
+          <span class="eyebrow">Gotowy na swoją historię?</span>
+          <h2 class="display">Twoja kolej.<br><span class="red">Zacznij.</span></h2>
+          <p>Masz przed sobą wybór: zamknąć tę stronę i wrócić do scrollowania — albo zacząć pisać swoją własną historię. 90 dni. Jeden krok naraz.</p>
+          <button class="btn btn-primary" onclick="showCommitS2()" style="font-size:16px;padding:16px 40px;">Chcę to zmienić →</button>
+          <p style="font-size:13px;color:var(--muted);margin-top:16px;max-width:none;">Zanim podejmiesz decyzję — jeden krok.</p>
+        </div>
+        <div id="commit-s2" style="display:none">
+          <span class="eyebrow">Twój kontrakt z sobą</span>
+          <h2 class="display">Jak masz<br><span class="red">na imię?</span></h2>
+          <p>Wpisz swoje imię. To twój kontrakt ze sobą — wojownik zaczyna od zobowiązania.</p>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px 0;">
+            <input type="text" id="warrior-name-input" class="commit-name-input" placeholder="Twoje imię…" required autocomplete="given-name">
+            <input type="email" id="warrior-email-input" class="commit-name-input" placeholder="twoj@email.pl" required autocomplete="email" inputmode="email">
+            <button class="btn btn-primary" onclick="commitWarrior()" style="font-size:15px;padding:14px 28px;">To jest mój moment →</button>
+          </div>
+          <p class="commit-err" id="commit-err" role="alert">Podaj imię oraz poprawny adres e-mail.</p>
+          <p style="font-size:13px;color:var(--muted);max-width:none;">Imię i e-mail zapisujemy lokalnie w przeglądarce – nikt ich nie widzi.</p>
+        </div>
+      </div>
+
+      <script>
+        // Wspólny zapis leada — identyczny fragment we wszystkich plikach lejka
+        function pwSaveLead(lead) {
+          // Zawsze trzymamy kopię lokalnie (fallback / podgląd).
+          try { localStorage.setItem('pw_lead', JSON.stringify(lead)); } catch (e) {}
+          // Zdarzenie Lead do pikseli (Meta/TikTok/GA4), jeśli tracking jest na stronie.
+          if (window.pwTrack) window.pwTrack('Lead', { content_name: (lead && lead.source) || 'lead' });
+
+          // ── Zapis leada do systemu mailingowego (ESP) ──
+          // TODO: wklej swój endpoint. Bezpiecznie = własny backend / serverless
+          // (np. /api/subscribe) ALBO webhook Zapier/Make, który PO STRONIE SERWERA
+          // wrzuca leada do MailerLite / GetResponse / ActiveCampaign.
+          // NIE wklejaj klucza API ESP w tym pliku — byłby jawny w przeglądarce.
+          var LEAD_ENDPOINT = ''; // <-- TODO: np. '/api/subscribe' lub URL webhooka
+          if (!LEAD_ENDPOINT) return;
+          return fetch(LEAD_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(lead)
+          }).catch(function () {});
+        }
+        function showCommitS2() {
+          var s1 = document.getElementById('commit-s1');
+          s1.style.opacity = '0';
+          setTimeout(function() {
+            s1.style.display = 'none';
+            var s2 = document.getElementById('commit-s2');
+            s2.style.display = 'block';
+            s2.style.opacity = '0';
+            requestAnimationFrame(function() { requestAnimationFrame(function() { s2.style.opacity = '1'; }); });
+            document.getElementById('warrior-name-input').focus();
+          }, 300);
+        }
+        function commitWarrior() {
+          var name = (document.getElementById('warrior-name-input').value || '').trim();
+          var email = (document.getElementById('warrior-email-input').value || '').trim();
+          var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+          var err = document.getElementById('commit-err');
+          if (name.length < 2 || !emailOk) {
+            err.textContent = (name.length < 2)
+              ? 'Podaj swoje imię (min. 2 znaki).'
+              : 'Podaj poprawny adres e-mail.';
+            err.classList.add('show');
+            (name.length < 2
+              ? document.getElementById('warrior-name-input')
+              : document.getElementById('warrior-email-input')).focus();
+            return;
+          }
+          err.classList.remove('show');
+
+          // Imię zostaje też pod osobnym kluczem (personalizacja w innych miejscach)
+          localStorage.setItem('pw_warrior_name', name);
+
+          var lead = {
+            name: name,
+            email: email,
+            source: 'historia-kontrakt',
+            magnet: '7-dniowy Detoks Dopaminowy',
+            enemy: null,
+            answers: [],
+            ts: Date.now()
+          };
+          pwSaveLead(lead);
+
+          window.location.href = 'index.html#oferta';
+        }
+        var _wni = document.getElementById('warrior-name-input');
+        if (_wni) _wni.addEventListener('keypress', function(e) { if (e.key === 'Enter') commitWarrior(); });
+        var _wei = document.getElementById('warrior-email-input');
+        if (_wei) _wei.addEventListener('keypress', function(e) { if (e.key === 'Enter') commitWarrior(); });
+      </script>
+
+    </article>
+  </div>
+</main>
+
+</body>
+</html>

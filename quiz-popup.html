@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Quiz popup (PWQ) – podgląd komponentu · Plan Wojownika</title>
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ────────────────────────────────────────────────────────────────────────
+     UWAGA: ten :root oraz cała sekcja podglądu istnieją WYŁĄCZNIE na potrzeby
+     samodzielnego podglądu tego pliku. Do index.html NIE kopiuj tego <head>,
+     tego :root ani sekcji .preview-note — strona ma już własne zmienne i fonty.
+     Przenosisz tylko blok oznaczony znacznikami „PWQ START” i „PWQ END”.
+     ──────────────────────────────────────────────────────────────────────── */
+  :root {
+    --bg: #0a0a0a; --bg-2: #121212; --bg-3: #181818;
+    --line: #262626; --line-2: #333;
+    --text: #f4f4f4; --text-2: #a8a8a8; --muted: #6e6e6e;
+    --accent: #e63946; --accent-2: #ff4d5e; --accent-soft: rgba(230,57,70,.12);
+    --ok: #22c55e; --gold: #d4af37;
+    --r-sm: 6px; --r-md: 10px; --r-lg: 16px;
+  }
+  html, body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: 'Manrope', system-ui, sans-serif; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .preview-note { max-width: 640px; margin: 0 auto; padding: 56px 24px; text-align: center; }
+  .preview-note h1 {
+    font-family: 'Anton', sans-serif; font-weight: 400; text-transform: uppercase;
+    letter-spacing: .01em; font-size: clamp(28px, 7vw, 44px); margin: 0 0 14px;
+  }
+  .preview-note p { color: var(--text-2); margin: 0 0 14px; }
+  .preview-note code {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent);
+    background: var(--accent-soft); padding: 2px 6px; border-radius: 4px;
+  }
+  .preview-open {
+    margin-top: 22px; padding: 15px 26px; border: 1px solid var(--accent);
+    background: var(--accent); color: #fff; border-radius: var(--r-sm);
+    font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px;
+    letter-spacing: .06em; text-transform: uppercase; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ SEKCJA PODGLĄDU — NIE kopiuj do index.html ════════════════ -->
+<section class="preview-note">
+  <h1>Quiz popup — podgląd</h1>
+  <p>To samodzielny podgląd komponentu. Do <code>index.html</code> wklej wyłącznie
+     blok między znacznikami <code>&lt;!-- PWQ START --&gt;</code> a
+     <code>&lt;!-- PWQ END --&gt;</code> (bez tego <code>&lt;head&gt;</code>,
+     bez tego <code>:root</code> i bez tej sekcji).</p>
+  <p>Na żywo quiz pojawia się tylko dla zimnego ruchu z reklam: w adresie musi być
+     <code>?quiz=1</code> albo dowolny parametr <code>utm_*</code>. Tutaj otworzysz go ręcznie:</p>
+  <button class="preview-open" type="button"
+          onclick="try{sessionStorage.removeItem('pwq_seen')}catch(e){}; if(window.PWQ_open){window.PWQ_open()}">
+    Otwórz quiz (podgląd)
+  </button>
+</section>
+
+<!-- PWQ START -->
+<!--
+  Plan Wojownika — Quiz popup (PWQ)
+  Komponent samodzielny. Korzysta ze zmiennych :root i fontów strony
+  (Anton / Manrope / JetBrains Mono). Wszystkie klasy mają prefiks .pwq-,
+  żeby nie kolidowały ze stylami strony. NIE duplikuje :root.
+-->
+<style>
+  .pwq-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(5,5,5,.78);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .35s ease, visibility .35s ease;
+  }
+  .pwq-overlay.pwq-open { opacity: 1; visibility: visible; }
+  .pwq-card {
+    position: relative;
+    width: 100%;
+    max-width: 540px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    padding: 30px 20px 24px;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-lg);
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(230,57,70,.12), transparent 55%),
+      var(--bg-2);
+    box-shadow: 0 40px 90px -30px rgba(0,0,0,.9), 0 0 0 1px rgba(230,57,70,.15);
+    transform: translateY(16px) scale(.98);
+    transition: transform .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .pwq-overlay.pwq-open .pwq-card { transform: none; }
+  .pwq-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--line-2);
+    color: var(--text-2);
+    font-size: 22px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    transition: background .2s, color .2s, border-color .2s;
+  }
+  .pwq-close:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .pwq-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+  .pwq-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+    animation: pwqPulse 2s ease infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pwqPulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+
+  .pwq-progress { height: 3px; background: var(--line); border-radius: 3px; margin: 6px 0 22px; overflow: hidden; }
+  .pwq-progress i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; transition: width .4s cubic-bezier(.2,.8,.2,1); }
+
+  .pwq-step { display: none; }
+  .pwq-step.pwq-active { display: block; animation: pwqIn .4s ease; }
+  @keyframes pwqIn { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+
+  .pwq-q {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    letter-spacing: .01em;
+    text-transform: uppercase;
+    font-size: clamp(22px, 6vw, 30px);
+    line-height: 1.07;
+    margin: 12px 0 20px;
+  }
+  .pwq-accent { color: var(--accent); }
+
+  .pwq-opts { display: flex; flex-direction: column; gap: 10px; }
+  .pwq-opt {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    width: 100%;
+    text-align: left;
+    padding: 15px 16px;
+    background: var(--bg-3);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+    transition: border-color .2s, background .2s, transform .15s;
+  }
+  .pwq-opt::before {
+    content: "";
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--line-2);
+    border-radius: 50%;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .pwq-opt:hover { border-color: var(--accent); background: #1d1416; transform: translateX(3px); }
+  .pwq-opt:hover::before { border-color: var(--accent); box-shadow: inset 0 0 0 3px var(--accent); }
+
+  .pwq-badge {
+    display: inline-block;
+    margin-bottom: 4px;
+    padding: 6px 14px;
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+  .pwq-result-copy { color: var(--text-2); font-size: 15px; margin: 0 0 20px; }
+
+  .pwq-form { margin: 0; }
+  .pwq-label { display: block; font-size: 14px; color: var(--text-2); margin-bottom: 12px; }
+  .pwq-label b { color: var(--text); }
+  .pwq-fields { display: flex; flex-direction: column; gap: 10px; }
+  .pwq-input {
+    width: 100%;
+    min-width: 0;
+    padding: 14px 16px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-sm);
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+  }
+  .pwq-input::placeholder { color: var(--muted); }
+  .pwq-input:focus { outline: none; border-color: var(--accent); }
+
+  .pwq-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px 22px;
+    border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    background: var(--accent);
+    color: #fff;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    box-shadow: 0 10px 30px -8px rgba(230,57,70,.4);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .pwq-btn:hover { transform: translateY(-1px); box-shadow: 0 0 0 4px rgba(230,57,70,.18), 0 18px 40px -10px rgba(230,57,70,.6); }
+  .pwq-btn-lg { padding: 17px 28px; font-size: 15px; }
+  .pwq-arrow { transition: transform .2s; }
+  .pwq-btn:hover .pwq-arrow { transform: translateX(3px); }
+
+  .pwq-err { display: none; margin-top: 10px; color: var(--accent-2); font-size: 13px; }
+  .pwq-err.pwq-show { display: block; }
+  .pwq-skip {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    text-align: center;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .pwq-skip:hover { color: var(--text-2); }
+
+  .pwq-done { text-align: center; }
+  .pwq-check {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    background: var(--ok);
+    color: #04130a;
+    display: grid;
+    place-items: center;
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+  @media (min-width: 560px) {
+    .pwq-overlay { padding: 24px; }
+    .pwq-card { padding: 38px 32px 32px; max-height: calc(100vh - 48px); }
+  }
+</style>
+
+<div class="pwq-overlay" id="pwq" aria-hidden="true">
+  <div class="pwq-card" role="dialog" aria-modal="true" aria-labelledby="pwq-title">
+    <button class="pwq-close" id="pwqClose" type="button" aria-label="Zamknij">&times;</button>
+
+    <div class="pwq-progress" aria-hidden="true"><i></i></div>
+
+    <!-- Pytanie 1 (punktowane) -->
+    <div class="pwq-step pwq-active" data-step="q" data-q="Czas na telefonie">
+      <span class="pwq-eyebrow"><span class="pwq-dot"></span>Test gotowości · 30 sekund</span>
+      <h3 class="pwq-q" id="pwq-title">Ile czasu dziennie schodzi Ci <span class="pwq-accent">na telefonie</span>?</h3>
+      <div class="pwq-opts">
+        <button class="pwq-opt" type="button" data-score="0">Mniej niż godzinę – mam to pod kontrolą</button>
+        <button class="pwq-opt" type="button" data-score="1">1–3 godziny dziennie</button>
+        <button class="pwq-opt" type="button" data-score="2">3–5 godzin – i nie wiem, kiedy to mija</button>
+        <button class="pwq-opt" type="button" data-score="3">Ponad 5 godzin – straciłem rachubę</button>
+      </div>
+    </div>
+
+    <!-- Pytanie 2 (punktowane) -->
+    <div class="pwq-step" data-step="q" data-q="Samopoczucie w ciele">
+      <h3 class="pwq-q">Jak czujesz się <span class="pwq-accent">w swoim ciele</span> dzisiaj?</h3>
+      <div class="pwq-opts">
+        <button class="pwq-opt" type="button" data-score="0">W formie – chcę po prostu więcej</button>
+        <button class="pwq-opt" type="button" data-score="1">Średnio – bywało lepiej</button>
+        <button class="pwq-opt" type="button" data-score="2">Słabo – unikam lustra</button>
+        <button class="pwq-opt" type="button" data-score="3">Dotknąłem dna</button>
+      </div>
+    </div>
+
+    <!-- Pytanie 3 (punktowane) -->
+    <div class="pwq-step" data-step="q" data-q="Liczba porzuconych startów">
+      <h3 class="pwq-q">Ile razy zaczynałeś <span class="pwq-accent">„od poniedziałku”</span> i odpuszczałeś?</h3>
+      <div class="pwq-opts">
+        <button class="pwq-opt" type="button" data-score="0">Nigdy – kończę to, co zaczynam</button>
+        <button class="pwq-opt" type="button" data-score="1">Raz, może dwa</button>
+        <button class="pwq-opt" type="button" data-score="2">Wiele razy</button>
+        <button class="pwq-opt" type="button" data-score="3">Tyle razy, że przestałem liczyć</button>
+      </div>
+    </div>
+
+    <!-- Wybór wroga (ustawia pole `enemy`) -->
+    <div class="pwq-step" data-step="enemy" data-q="Główny wróg">
+      <h3 class="pwq-q">Który wróg <span class="pwq-accent">trzyma Cię</span> najmocniej?</h3>
+      <div class="pwq-opts">
+        <button class="pwq-opt" type="button" data-enemy="Pętla Dopaminy">Pętla Dopaminy – telefon rządzi moim dniem</button>
+        <button class="pwq-opt" type="button" data-enemy="Spadek Testosteronu">Spadek Testosteronu – brak energii i słaba forma</button>
+        <button class="pwq-opt" type="button" data-enemy="Brak Dyscypliny">Brak Dyscypliny – czekam na motywację, która nie przychodzi</button>
+      </div>
+    </div>
+
+    <!-- Pytanie 5 (punktowane) -->
+    <div class="pwq-step" data-step="q" data-q="Deklarowany czas na trening">
+      <h3 class="pwq-q">Ile czasu realnie <span class="pwq-accent">dasz</span> na trening?</h3>
+      <div class="pwq-opts">
+        <button class="pwq-opt" type="button" data-score="1">Ledwie 15 minut dziennie</button>
+        <button class="pwq-opt" type="button" data-score="2">30–45 minut, 3–4 razy w tygodniu</button>
+        <button class="pwq-opt" type="button" data-score="2">Mam godzinę dziennie</button>
+        <button class="pwq-opt" type="button" data-score="3">Zrobię, co trzeba – choćby o 5 rano</button>
+      </div>
+    </div>
+
+    <!-- Wynik / diagnoza + zapis leada -->
+    <div class="pwq-step" data-step="result">
+      <div class="pwq-result-main" id="pwqResultMain">
+        <div class="pwq-badge" id="pwqBadge">Diagnoza</div>
+        <h3 class="pwq-q" id="pwqVerdict">Plan Wojownika powstał <span class="pwq-accent">dla Ciebie.</span></h3>
+        <p class="pwq-result-copy" id="pwqVerdictCopy"></p>
+        <!-- TODO (item 11): wpisz PRAWDZIWĄ liczbę i usuń atrybut hidden. Bez zmyślania. -->
+        <p id="pwqProof" hidden style="font-size:13px;color:var(--text-2);margin:-6px 0 18px"><b style="color:var(--text)">TODO: liczba</b> mężczyzn już zaczęło reset — dołączasz do nich.</p>
+
+        <form class="pwq-form" id="pwqForm" novalidate>
+          <label class="pwq-label" for="pwqName">Zostaw imię i e-mail – wyślę Ci <b>7-dniowy Detoks Dopaminowy (wartość 97 zł)</b> za darmo oraz pierwszy krok planu.</label>
+          <div class="pwq-fields">
+            <input class="pwq-input" type="text" id="pwqName" name="name" placeholder="Imię" required autocomplete="given-name">
+            <input class="pwq-input" type="email" id="pwqEmail" name="email" placeholder="twoj@email.pl" required autocomplete="email" inputmode="email">
+            <button type="submit" class="pwq-btn">Wyślij mi detoks <span class="pwq-arrow" aria-hidden="true">→</span></button>
+          </div>
+          <div class="pwq-err" id="pwqErr">Podaj imię oraz poprawny adres e-mail.</div>
+        </form>
+
+        <button class="pwq-skip" id="pwqSkip" type="button">Pomiń – chcę od razu zobaczyć ofertę →</button>
+      </div>
+
+      <div class="pwq-done" id="pwqDone" hidden>
+        <div class="pwq-check" aria-hidden="true">✓</div>
+        <h3 class="pwq-q">Jesteś <span class="pwq-accent">w środku.</span></h3>
+        <p class="pwq-result-copy">Detoks leci na Twojego maila. Teraz zobacz, co dostajesz w pełnym Planie Wojownika.</p>
+        <a class="pwq-btn pwq-btn-lg" id="pwqOffer" href="index.html#oferta">Zobacz Plan Wojownika – 349 zł <span class="pwq-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── PLAN WOJOWNIKA — QUIZ POPUP (PWQ) ──
+  (function () {
+    var overlay = document.getElementById('pwq');
+    if (!overlay) return;
+
+    var REDIRECT_AFTER = 'index.html#oferta';    // dokąd kierujemy po zapisie / pominięciu
+    var SEEN_KEY = 'pwq_seen';                    // sessionStorage — pokazujemy raz na sesję
+    var MAGNET = '7-dniowy Detoks Dopaminowy';    // lead magnet oferowany w quizie
+
+    var steps = Array.prototype.slice.call(overlay.querySelectorAll('.pwq-step'));
+    var flow = steps.filter(function (s) { return s.dataset.step === 'q' || s.dataset.step === 'enemy'; });
+    var resultStep = steps.filter(function (s) { return s.dataset.step === 'result'; })[0];
+    var bar = overlay.querySelector('.pwq-progress i');
+
+    var idx = 0;
+    var score = 0;
+    var enemy = '';
+    var answers = [];
+
+    function open() {
+      // tylko raz na sesję
+      try { if (sessionStorage.getItem(SEEN_KEY)) return; } catch (e) {}
+      try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (e) {}
+      resetState();
+      overlay.classList.add('pwq-open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      if (window.pwTrack) window.pwTrack('quiz_start');
+    }
+    function close() {
+      overlay.classList.remove('pwq-open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+    function resetState() {
+      idx = 0; score = 0; enemy = ''; answers = [];
+      goTo(0);
+    }
+    function goTo(i) {
+      steps.forEach(function (s) { s.classList.remove('pwq-active'); });
+      if (i < flow.length) {
+        flow[i].classList.add('pwq-active');
+        bar.style.width = (((i + 1) / (flow.length + 1)) * 100) + '%';
+      } else {
+        resultStep.classList.add('pwq-active');
+        bar.style.width = '100%';
+        renderResult();
+      }
+    }
+    function renderResult() {
+      var badge = document.getElementById('pwqBadge');
+      var verdict = document.getElementById('pwqVerdict');
+      var copy = document.getElementById('pwqVerdictCopy');
+      var enemyTxt = enemy || 'System';
+      if (score >= 6) {
+        badge.textContent = 'Diagnoza: czas na reset';
+        verdict.innerHTML = 'Plan Wojownika powstał <span class="pwq-accent">dokładnie dla Ciebie.</span>';
+        copy.innerHTML = 'Twoje odpowiedzi to portret faceta w pętli: scroll, słaba forma, „od poniedziałku”. ' +
+          'Twój główny wróg to <b>' + enemyTxt + '</b> – i właśnie z tego miejsca rok temu startował Michał. ' +
+          'Ten system powstał po to, żeby Cię stamtąd wyciągnąć.';
+      } else {
+        badge.textContent = 'Diagnoza: następny poziom';
+        verdict.innerHTML = 'Masz fundament – czas <span class="pwq-accent">wejść wyżej.</span>';
+        copy.innerHTML = 'Nie jesteś na dnie, ale wiesz, że stać Cię na więcej. ' +
+          'Twój główny wróg to <b>' + enemyTxt + '</b>. ' +
+          'Plan Wojownika doda strukturę i dyscyplinę, które zamienią „nieźle” w „nie do zatrzymania”.';
+      }
+    }
+
+    // Kliknięcia w odpowiedzi (pytania punktowane + wybór wroga)
+    overlay.querySelectorAll('.pwq-opt').forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        var stepEl = opt.closest('.pwq-step');
+        var qLabel = stepEl ? (stepEl.getAttribute('data-q') || '') : '';
+        if (opt.hasAttribute('data-enemy')) {
+          enemy = opt.getAttribute('data-enemy');
+        } else {
+          score += parseInt(opt.getAttribute('data-score') || '0', 10);
+        }
+        answers.push({ q: qLabel, a: opt.textContent.trim() });
+        idx++;
+        goTo(idx);
+      });
+    });
+
+    // Zapis leada + stan sukcesu
+    var form = document.getElementById('pwqForm');
+    var nameInput = document.getElementById('pwqName');
+    var emailInput = document.getElementById('pwqEmail');
+    var err = document.getElementById('pwqErr');
+    var resultMain = document.getElementById('pwqResultMain');
+    var resultDone = document.getElementById('pwqDone');
+
+    // Wspólny zapis leada — identyczny fragment we wszystkich plikach lejka
+    function pwSaveLead(lead) {
+      // Zawsze trzymamy kopię lokalnie (fallback / podgląd).
+      try { localStorage.setItem('pw_lead', JSON.stringify(lead)); } catch (e) {}
+      // Zdarzenie Lead do pikseli (Meta/TikTok/GA4), jeśli tracking jest na stronie.
+      if (window.pwTrack) window.pwTrack('Lead', { content_name: (lead && lead.source) || 'lead' });
+
+      // ── Zapis leada do systemu mailingowego (ESP) ──
+      // TODO: wklej swój endpoint. Bezpiecznie = własny backend / serverless
+      // (np. /api/subscribe) ALBO webhook Zapier/Make, który PO STRONIE SERWERA
+      // wrzuca leada do MailerLite / GetResponse / ActiveCampaign.
+      // NIE wklejaj klucza API ESP w tym pliku — byłby jawny w przeglądarce.
+      var LEAD_ENDPOINT = ''; // <-- TODO: np. '/api/subscribe' lub URL webhooka
+      if (!LEAD_ENDPOINT) return;
+      return fetch(LEAD_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(lead)
+      }).catch(function () {});
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = nameInput.value.trim();
+      var email = emailInput.value.trim();
+      var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!name || !emailOk) {
+        err.classList.add('pwq-show');
+        (name ? emailInput : nameInput).focus();
+        return;
+      }
+      err.classList.remove('pwq-show');
+
+      var lead = {
+        name: name,
+        email: email,
+        source: 'quiz-popup',
+        magnet: MAGNET,
+        enemy: enemy,
+        answers: answers,
+        ts: Date.now()
+      };
+      pwSaveLead(lead);
+
+      resultMain.hidden = true;
+      resultDone.hidden = false;
+    });
+
+    // „Pomiń” oraz CTA oferty kierują do sekcji oferty (REDIRECT_AFTER)
+    var offer = document.getElementById('pwqOffer');
+    offer.setAttribute('href', REDIRECT_AFTER);
+    offer.addEventListener('click', close);
+    document.getElementById('pwqSkip').addEventListener('click', function () {
+      close();
+      window.location.href = REDIRECT_AFTER;
+    });
+    document.getElementById('pwqClose').addEventListener('click', close);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('pwq-open')) close();
+    });
+
+    // Udostępnij ręczne otwarcie (np. podgląd komponentu w quiz-popup.html)
+    window.PWQ_open = open;
+
+    // ── TRIGGER: quiz tylko dla zimnego ruchu z reklam, po 2 s ──
+    // „Z reklamy" = parametr quiz, dowolny utm_*, albo click-id sieci reklamowej
+    // (TikTok ttclid, Meta fbclid, Google gclid/gbraid/wbraid, Microsoft msclkid, LinkedIn li_fat_id).
+    var params = new URLSearchParams(window.location.search);
+    var CLICK_IDS = ['ttclid', 'fbclid', 'gclid', 'gbraid', 'wbraid', 'msclkid', 'li_fat_id'];
+    var fromAd = params.has('quiz')
+      || [...params.keys()].some(function (k) { return k.indexOf('utm_') === 0; })
+      || CLICK_IDS.some(function (id) { return params.has(id); });
+    if (fromAd) {
+      var triggered = false;
+      function fire() { if (triggered) return; triggered = true; cleanup(); open(); }
+      function onScroll() {
+        var h = document.documentElement;
+        var scrolled = h.scrollTop || document.body.scrollTop;
+        var max = (h.scrollHeight - h.clientHeight) || 1;
+        if (scrolled / max >= 0.30) fire();              // po ~30% strony
+      }
+      function onExit(e) { if (e.clientY <= 0) fire(); }  // exit-intent (kursor ucieka górą)
+      function cleanup() {
+        window.removeEventListener('scroll', onScroll);
+        document.removeEventListener('mouseout', onExit);
+        clearTimeout(fallback);
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      document.addEventListener('mouseout', onExit);
+      var fallback = setTimeout(fire, 6000);              // fallback czasowy ~6 s
+    }
+  })();
+</script>
+<!-- PWQ END -->
+
+</body>
+</html>

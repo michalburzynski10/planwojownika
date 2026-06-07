@@ -1,0 +1,18 @@
+# ── Pliki dev / lokalne (nie publikować) ──
+.claude/
+*.code-workspace
+
+# ── Śmieci systemowe ──
+Thumbs.db
+ehthumbs.db
+desktop.ini
+.DS_Store
+
+# ── Dokumenty robocze — NIE publikować ──
+*.docx
+
+# ── Nieużywane obrazki (nie deployujemy na produkcję) ──
+# (niereferencowane w żadnym .html — sprawdzone)
+Gemini_Generated_Image_*.png
+1aee4652-791b-4e06-aeb2-0aeae8651efe.jpg
+65a18e7c-*
