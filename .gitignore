@@ -16,3 +16,10 @@ desktop.ini
 Gemini_Generated_Image_*.png
 1aee4652-791b-4e06-aeb2-0aeae8651efe.jpg
 65a18e7c-*
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
