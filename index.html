@@ -40,9 +40,13 @@
     CURRENCY: 'PLN',
     // Niedobór: ustaw REALNY limit miejsc w kohorcie (MUSI być prawdziwy).
     COHORT_SEATS: 25,
-    // Data startu: pusto = liczona automatycznie (najbliższy poniedziałek).
-    // Wpisz np. '8 czerwca', żeby ustawić sztywno.
-    START_DATE: ''
+    // Data startu kohorty — tekst pokazywany na stronie.
+    // Pusto = liczona automatycznie (najbliższy poniedziałek).
+    START_DATE: '14 września',
+    // Ta sama data w formacie ISO (RRRR-MM-DD) = bezpiecznik kampanii:
+    // gdy dzień startu minie, strona przestaje pokazywać przeszłą datę
+    // i wraca do auto-poniedziałku. Wtedy wpisz tu datę NASTĘPNEJ kohorty.
+    START_DATE_ISO: '2026-09-14'
   };
 </script>
 
@@ -359,6 +363,9 @@
     color: var(--accent);
     background: var(--accent-soft);
   }
+  /* Treść plakietki jako JEDEN element flex → łamie się jak normalny tekst
+     (bez tego każdy zagnieżdżony span dostaje własny odstęp 8px i psuje wiersz) */
+  .eyebrow .eb-txt { line-height: 1.6; }
   .eyebrow .dot {
     width: 6px;
     height: 6px;
@@ -426,7 +433,9 @@
     font-size: 13px;
     color: var(--text-2);
   }
-  .hero-trust span { display: flex; align-items: center; gap: 8px; }
+  /* Tylko bezpośrednie dzieci są elementami flex — zagnieżdżone spany
+     (data-start-date / data-seats) mają płynąć jak zwykły tekst, bez odstępów */
+  .hero-trust > span { display: flex; align-items: center; gap: 8px; }
   .hero-trust svg { width: 14px; height: 14px; color: var(--accent); flex: 0 0 14px; }
 
   /* ── BEFORE / AFTER ── */
@@ -554,7 +563,9 @@
     text-transform: uppercase;
     color: var(--text-2);
   }
-  .ticker-track span { display: flex; align-items: center; gap: 60px; }
+  /* Tylko bezpośrednie dzieci = elementy flex. Bez tego zagnieżdżony
+     <span data-seats> stawał się blokiem i łamał „25 osób" na dwie linie. */
+  .ticker-track > span { display: flex; align-items: center; gap: 60px; }
   .ticker-track b { color: var(--accent); font-weight: 600; }
   .ticker-track i { font-style: normal; color: var(--text); }
   .ticker .star { color: var(--accent); }
@@ -752,6 +763,29 @@
     flex-shrink: 0;
   }
   .price-card .meta { font-size: 13px; color: var(--text-2); margin-bottom: 18px; }
+  /* Kohorta przy cenie: termin + limit dokładnie w punkcie decyzji o zakupie */
+  .price-card .cohort-note {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    margin: -6px 0 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .price-card .cohort-note b { color: var(--accent); font-weight: 600; }
+  .price-card .cohort-note .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+    animation: pulse 2s ease infinite;
+    flex-shrink: 0;
+  }
   .price-card .btn { width: 100%; justify-content: center; }
   .pay-row {
     display: flex;
@@ -1029,6 +1063,29 @@
     .final { padding: 64px 0; }
   }
 
+  /* ── MOBILE POLISH (telefon) ── */
+  @media (max-width: 600px) {
+    /* Nagłówki: niższe minimum + płynne skalowanie, żeby nie przytłaczały i ładnie się łamały */
+    .hero h1 { font-size: clamp(32px, 9vw, 46px); max-width: none; margin: 14px 0; }
+    .hero p.lead { font-size: 16px; max-width: none; margin-bottom: 24px; }
+    .s-head h2 { font-size: clamp(28px, 8vw, 38px); }
+    .final h2 { font-size: clamp(30px, 9vw, 42px); }
+    .price-card .now { font-size: clamp(46px, 16vw, 60px); }
+    .phase .num { font-size: 48px; }
+    .screen-time { font-size: 34px; }
+
+    /* CTA na całą szerokość, jedno pod drugim — długie etykiety nie wystają poza ekran */
+    .hero-ctas { flex-direction: column; gap: 10px; }
+    .hero-ctas .btn { width: 100%; }
+    .btn-lg { padding: 16px 22px; font-size: 14px; }
+    .btn { white-space: normal; text-align: center; }
+
+    /* Więcej oddechu w kontenerze, ciaśniejszy rząd zaufania */
+    .wrap { padding: 0 18px; }
+    .hero-trust { gap: 10px 16px; font-size: 12px; }
+    .s-head { margin-bottom: 36px; }
+  }
+
   /* ── STICKY CTA (mobile) ── */
   .sticky-cta {
     position: fixed;
@@ -1075,7 +1132,7 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
-      <span class="eyebrow accent"><span class="dot"></span>Kohorta #08 · start <span data-start-date>8 czerwca</span> · <span data-seats>25</span> miejsc</span>
+      <span class="eyebrow accent"><span class="dot"></span><span class="eb-txt">Kohorta #08 · start <span data-start-date>14 września</span> · limit <span data-seats>25</span> miejsc</span></span>
       <h1 class="display">Rok temu byłem <span class="red">tobą.</span> Dziś jestem <span class="uline">dowodem</span>, że to da się zmienić.</h1>
       <p class="lead">90-dniowy system, który wyciąga przeciętnego mężczyznę z pętli TikToka, słabej formy i odkładania „od poniedziałku". <b>Bez wymówek. Bez teatru. Tylko wynik.</b></p>
       <div class="hero-ctas">
@@ -1093,7 +1150,7 @@
         </span>
         <span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="m16 11 2 2 4-4"/></svg>
-          Kohorta limitowana do <span data-seats>25</span> osób
+          <span class="ht-txt">Start <span data-start-date>14 września</span> · limit <span data-seats>25</span> osób</span>
         </span>
       </div>
     </div>
@@ -1122,6 +1179,7 @@
     <span>
       Średnia zmiana <b>−9 kg / 90 dni</b> <span class="star">★</span>
       <i>Twórca: Michał</i> <span class="star">★</span>
+      Start kohorty <b><span data-start-date>14 września</span></b> <span class="star">★</span>
       Limit kohorty <b><span data-seats>25</span> osób</b> <span class="star">★</span>
       Średni czas treningu <b>45 min</b> <span class="star">★</span>
       <i>Bez wymówek</i> <span class="star">★</span>
@@ -1129,6 +1187,7 @@
     <span aria-hidden="true">
       Średnia zmiana <b>−9 kg / 90 dni</b> <span class="star">★</span>
       <i>Twórca: Michał</i> <span class="star">★</span>
+      Start kohorty <b><span data-start-date>14 września</span></b> <span class="star">★</span>
       Limit kohorty <b><span data-seats>25</span> osób</b> <span class="star">★</span>
       Średni czas treningu <b>45 min</b> <span class="star">★</span>
       <i>Bez wymówek</i> <span class="star">★</span>
@@ -1378,6 +1437,7 @@
             </div>
             <span class="save">−50% TANIEJ</span>
           </div>
+          <p class="cohort-note"><span class="dot"></span>Kohorta rusza <b><span data-start-date>14 września</span></b> · limit <b><span data-seats>25</span> osób</b></p>
           <!-- Checkout: href podstawiany z window.PW.CHECKOUT_URL (atrybut data-checkout) -->
           <a href="#oferta" data-checkout class="btn btn-primary btn-lg">Dołącz do programu <span class="arrow" aria-hidden="true">→</span></a>
           <div class="pay-row">
@@ -1590,12 +1650,20 @@
     var seats = (window.PW && window.PW.COHORT_SEATS) || 25;
     document.querySelectorAll('[data-seats]').forEach(function (el) { el.textContent = seats; });
 
-    // Data startu = najbliższy poniedziałek (kohorty startują w pon.), więc data
-    // nigdy nie jest przeszła. Chcesz sztywną? Ustaw window.PW.START_DATE = '8 czerwca'.
+    // Data startu = sztywna z window.PW.START_DATE (kampania). Gdy jej termin
+    // minie (START_DATE_ISO w przeszłości), wracamy do najbliższego poniedziałku,
+    // żeby na stronie NIGDY nie wisiała przeszła data startu.
     var startEls = document.querySelectorAll('[data-start-date]');
     if (startEls.length) {
-      var label = (window.PW && window.PW.START_DATE) || nextMondayPL();
+      var label = fixedStartStillAhead() ? window.PW.START_DATE : nextMondayPL();
       startEls.forEach(function (el) { el.textContent = label; });
+    }
+    function fixedStartStillAhead() {
+      if (!window.PW || !window.PW.START_DATE) return false;
+      var iso = window.PW.START_DATE_ISO;
+      if (!iso) return true;                            // brak ISO = ufamy tekstowi
+      var start = new Date(iso + 'T23:59:59');          // dzień startu ważny do północy
+      return !isNaN(start.getTime()) && start >= new Date();
     }
     function nextMondayPL() {
       var d = new Date(), day = d.getDay();                    // 0=niedziela … 1=poniedziałek
