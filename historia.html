@@ -539,10 +539,40 @@
     .photo-grid-4 img:hover { filter: none; }
   }
 
+  /* ── GALERIA „PO PRZEMIANIE" ──
+     Kulminacja dowodu: 1 zdjecie glowne (2x2) + 4 mniejsze w siatce 4-kolumnowej.
+     Celowo PELNY KOLOR — w kontrze do wyszarzonej siatki „dna" (.photo-grid-4).
+     Hero rozpina sie na 2 wiersze, wiec jego proporcje wychodza same na ~3/4. */
+  .proof-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 48px 0 8px;
+  }
+  .proof-grid img {
+    width: 100%;
+    height: auto;                /* musi byc — inaczej atrybut height="" z HTML wygrywa z aspect-ratio */
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    border-radius: var(--r-md);
+    border: 1px solid var(--line);
+    display: block;
+  }
+  .proof-grid .proof-hero {
+    grid-column: span 2;
+    grid-row: span 2;
+    aspect-ratio: auto;          /* wysokosc bierze sie z dwoch wierszy siatki */
+    height: 100%;
+    border-color: rgba(230,57,70,.55);
+  }
+
   @media (max-width: 600px) {
     .photo-grid-4 { grid-template-columns: repeat(2, 1fr); }
     .stats-row { gap: 16px; }
     .cta-box { padding: 36px 24px; }
+    /* Telefon: hero na cala szerokosc, pod nim 4 zdjecia 2x2 */
+    .proof-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .proof-grid .proof-hero { grid-column: span 2; grid-row: auto; aspect-ratio: 4/5; height: auto; }
   }
 
   /* ── INLINE CTA BLOCKS ── */
@@ -981,6 +1011,15 @@
           <span>walki MMA</span>
         </div>
       </div>
+
+      <div class="proof-grid">
+        <img class="proof-hero" src="po-przemianie-1.jpeg" width="1050" height="1400" loading="lazy" alt="Michał po transformacji — poza double biceps w szatni siłowni, 85 kg">
+        <img src="po-przemianie-2.jpeg" width="1049" height="1400" loading="lazy" alt="Michał po transformacji — cała sylwetka w lustrze siłowni">
+        <img src="po-przemianie-3.jpeg" width="1050" height="1400" loading="lazy" alt="Michał po transformacji — widoczna definicja brzucha">
+        <img src="po-przemianie-4.jpeg" width="693" height="925" loading="lazy" alt="Michał po transformacji — sylwetka w plenerze">
+        <img src="po-przemianie-5.jpeg" width="788" height="1400" loading="lazy" alt="Michał po transformacji — biceps w lustrze">
+      </div>
+      <p class="photo-grid-caption">2026. To nie geny. To ten sam system, który dostajesz w Planie.</p>
 
       <div class="cta-open">
         <p class="cta-tag">Te same wyniki są możliwe dla ciebie</p>
