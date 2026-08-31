@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Dziękuję — Plan Wojownika</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Potwierdzenie zakupu Planu Wojownika.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PLAN WOJOWNIKA — KONFIGURACJA + TRACKING  (ten sam blok co w index.html)
+     Uzupełnij wartości oznaczone TODO. Puste = funkcja nieaktywna.
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+  window.PW = {
+    // TODO: URL ankiety powdrożeniowej (Google Forms / Tally).
+    // Użyje go przycisk z atrybutem data-ankieta. Puste = przycisk nieaktywny.
+    ANKIETA_URL: '',
+    META_PIXEL_ID: '',     // TODO: np. '1234567890123456'
+    TIKTOK_PIXEL_ID: '',   // TODO: np. 'CXXXXXXXXXXXXXXXXX'
+    GA4_ID: '',            // TODO: np. 'G-XXXXXXXXXX'
+    PRICE: 349,
+    CURRENCY: 'PLN',
+    COHORT_SEATS: 25,
+    START_DATE: '14 września',
+    START_DATE_ISO: '2026-09-14'
+  };
+</script>
+
+<!-- Tracking + zgoda na cookies (CMP): piksele startują DOPIERO po zgodzie -->
+<script>
+(function () {
+  var CONSENT_KEY = 'pw_consent';   // 'granted' | 'denied'
+  var started = false;
+
+  // Piksele Meta/TikTok/GA4 — odpalane TYLKO po zgodzie (i tylko gdy ID ustawione)
+  function pwInitPixels() {
+    if (started) return; started = true;
+    var PW = window.PW || {};
+    if (PW.META_PIXEL_ID) {
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', PW.META_PIXEL_ID); fbq('track', 'PageView');
+    }
+    if (PW.TIKTOK_PIXEL_ID) {
+      !function (w, d, t) {
+        w.TiktokAnalyticsObject = t; var ttq = w[t] = w[t] || [];
+        ttq.methods = ["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"];
+        ttq.setAndDefer = function (t, e) { t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } };
+        for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
+        ttq.instance = function (t) { for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]); return e };
+        ttq.load = function (e, n) { var r = "https://analytics.tiktok.com/i18n/pixel/events.js", o = n && n.partner; ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = r, ttq._t = ttq._t || {}, ttq._t[e] = +new Date, ttq._o = ttq._o || {}, ttq._o[e] = n || {}; var s = d.createElement("script"); s.type = "text/javascript", s.async = !0, s.src = r + "?sdkid=" + e + "&lib=" + t; var a = d.getElementsByTagName("script")[0]; a.parentNode.insertBefore(s, a) };
+        ttq.load(PW.TIKTOK_PIXEL_ID); ttq.page();
+      }(window, document, 'ttq');
+    }
+    if (PW.GA4_ID) {
+      var s = document.createElement('script'); s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + PW.GA4_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { dataLayer.push(arguments) };
+      gtag('js', new Date()); gtag('config', PW.GA4_ID);
+    }
+  }
+
+  // pwTrack: jedno API zdarzeń → Meta + TikTok + GA4 (no-op bez zgody/pikseli)
+  window.pwTrack = function (event, params) {
+    params = params || {};
+    try { if (typeof fbq === 'function') {
+      var fbStd = { Lead:1, InitiateCheckout:1, Purchase:1, CompleteRegistration:1 };
+      if (fbStd[event]) fbq('track', event, params); else fbq('trackCustom', event, params);
+    } } catch (e) {}
+    try { if (window.ttq && typeof ttq.track === 'function') {
+      var ttMap = { quiz_start:'ViewContent', Lead:'SubmitForm', InitiateCheckout:'InitiateCheckout', Purchase:'CompletePayment' };
+      ttq.track(ttMap[event] || event, params);
+    } } catch (e) {}
+    try { if (typeof gtag === 'function') {
+      var gaMap = { quiz_start:'quiz_start', Lead:'generate_lead', InitiateCheckout:'begin_checkout', Purchase:'purchase' };
+      gtag('event', gaMap[event] || event, params);
+    } } catch (e) {}
+  };
+
+  // ── Zgoda na cookies ──
+  function getC() { try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; } }
+  function setC(v) { try { localStorage.setItem(CONSENT_KEY, v); } catch (e) {} }
+  window.pwSetConsent = function (v) { setC(v); hide(); if (v === 'granted') pwInitPixels(); };
+  window.pwOpenConsent = function () { show(); };   // np. link Ustawienia cookies w stopce
+
+  var el = null;
+  function build() {
+    if (el) return el;
+    var st = document.createElement('style');
+    st.textContent =
+      '.pwc{position:fixed;left:0;right:0;bottom:0;z-index:300;background:rgba(13,13,13,.98);' +
+      'border-top:1px solid #262626;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);' +
+      'padding:18px 16px;padding-bottom:calc(18px + env(safe-area-inset-bottom));' +
+      'font-family:Manrope,system-ui,sans-serif;color:#a8a8a8;}' +
+      '.pwc-in{max-width:1180px;margin:0 auto;display:flex;gap:16px 24px;align-items:center;' +
+      'justify-content:space-between;flex-wrap:wrap;}' +
+      '.pwc-tx{font-size:13px;line-height:1.5;max-width:64ch;}' +
+      '.pwc-tx b{color:#f4f4f4;}.pwc-tx a{color:#ff4d5e;text-decoration:underline;}' +
+      '.pwc-ac{display:flex;gap:10px;flex-wrap:wrap;}' +
+      '.pwc-b{font-family:Manrope,sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;' +
+      'text-transform:uppercase;padding:11px 22px;border-radius:6px;border:1px solid #333;cursor:pointer;white-space:nowrap;}' +
+      '.pwc-yes{background:#e63946;border-color:#e63946;color:#fff;}' +
+      '.pwc-no{background:transparent;color:#f4f4f4;}' +
+      '@media(max-width:640px){.pwc-ac{width:100%}.pwc-b{flex:1}}';
+    document.head.appendChild(st);
+    el = document.createElement('div');
+    el.className = 'pwc';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-label', 'Zgoda na pliki cookies');
+    el.innerHTML =
+      '<div class="pwc-in"><div class="pwc-tx">Używamy plików cookies. Niezbędne działają zawsze. ' +
+      'Na <b>analitykę i reklamę</b> (Meta, TikTok, Google) — tylko za Twoją zgodą. Szczegóły w ' +
+      '<a href="polityka-prywatnosci.html">Polityce prywatności</a>.</div>' +
+      '<div class="pwc-ac"><button type="button" class="pwc-b pwc-no">Odrzuć</button>' +
+      '<button type="button" class="pwc-b pwc-yes">Akceptuję</button></div></div>';
+    el.querySelector('.pwc-yes').addEventListener('click', function () { window.pwSetConsent('granted'); });
+    el.querySelector('.pwc-no').addEventListener('click', function () { window.pwSetConsent('denied'); });
+    return el;
+  }
+  function show() {
+    var e = build();
+    if (!e.parentNode) {
+      if (document.body) document.body.appendChild(e);
+      else document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(e); });
+    }
+    e.style.display = '';
+  }
+  function hide() { if (el) el.style.display = 'none'; }
+
+  // Start: zgoda już zapisana → uszanuj ją; brak decyzji → pokaż baner
+  var c = getC();
+  if (c === 'granted') pwInitPixels();
+  else if (c !== 'denied') {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', show);
+    else show();
+  }
+})();
+</script>
+
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-2: #121212;
+    --bg-3: #181818;
+    --line: #262626;
+    --line-2: #333;
+    --text: #f4f4f4;
+    --text-2: #a8a8a8;
+    --muted: #6e6e6e;
+    --accent: #e63946;
+    --accent-2: #ff4d5e;
+    --accent-soft: rgba(230,57,70,.12);
+    --ok: #22c55e;
+    --ok-soft: rgba(34,197,94,.12);
+    --r-sm: 6px;
+    --r-md: 10px;
+    --r-lg: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  img { max-width: 100%; display: block; }
+
+  .ty {
+    width: 100%;
+    max-width: 560px;
+    padding: 34px 24px 28px;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-lg);
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(34,197,94,.10), transparent 55%),
+      var(--bg-2);
+    box-shadow: 0 40px 90px -30px rgba(0,0,0,.9), 0 0 0 1px rgba(34,197,94,.12);
+  }
+
+  /* Zielony znacznik: potwierdzenie, nie sprzedaz — stad kolor --ok zamiast --accent */
+  .ty-check {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--ok-soft);
+    color: var(--ok);
+    border: 1px solid rgba(34,197,94,.4);
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    line-height: 1;
+    margin-bottom: 18px;
+  }
+
+  .ty-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid rgba(34,197,94,.45);
+    border-radius: 100px;
+    background: var(--ok-soft);
+    color: var(--ok);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+
+  .ty h1 {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    letter-spacing: .01em;
+    text-transform: uppercase;
+    font-size: clamp(28px, 7.5vw, 42px);
+    line-height: 1.02;
+    margin: 14px 0 14px;
+  }
+  .ty h1 .accent { color: var(--accent); }
+  .ty-lead { color: var(--text-2); font-size: 16px; margin: 0 0 26px; }
+  .ty-lead b { color: var(--text); }
+
+  .ty-steps-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .ty-steps { list-style: none; margin: 0 0 26px; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+  .ty-steps li { position: relative; padding-left: 42px; font-size: 15px; color: var(--text-2); }
+  .ty-steps li b { color: var(--text); display: block; margin-bottom: 2px; }
+  .ty-steps li .n {
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: 1px solid var(--line-2);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    display: grid;
+    place-items: center;
+  }
+
+  .ty-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px 22px;
+    border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 10px 30px -8px rgba(230,57,70,.4);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .ty-btn:hover { transform: translateY(-1px); box-shadow: 0 0 0 4px rgba(230,57,70,.18), 0 18px 40px -10px rgba(230,57,70,.6); }
+  .ty-arrow { transition: transform .2s; }
+  .ty-btn:hover .ty-arrow { transform: translateX(3px); }
+  /* Dopoki ANKIETA_URL nie jest ustawiony — przycisk wyglada na nieaktywny */
+  .ty-btn[data-pending] { opacity: .45; cursor: not-allowed; box-shadow: none; }
+  .ty-btn[data-pending]:hover { transform: none; box-shadow: none; }
+
+  .ty-note { margin: 16px 0 0; font-size: 13px; color: var(--muted); }
+  .ty-note a { color: var(--accent-2); text-decoration: underline; }
+
+  .ty-foot {
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 10px 18px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .ty-foot a { color: var(--text-2); text-decoration: none; }
+  .ty-foot a:hover { color: var(--text); text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<main class="ty" role="main">
+  <div class="ty-check" aria-hidden="true">✓</div>
+  <span class="ty-eyebrow">Płatność przyjęta</span>
+
+  <h1>Jesteś w środku.<br><span class="accent">Kohorta #01.</span></h1>
+
+  <p class="ty-lead">Potwierdzenie zakupu poleciało na Twojego maila. Zostaje jedna rzecz do zrobienia — i to <b>Ty</b> ją robisz, nie ja.</p>
+
+  <p class="ty-steps-label">Co teraz</p>
+  <ol class="ty-steps">
+    <li>
+      <span class="n">1</span>
+      <b>Wypełnij ankietę startową</b>
+      Poziom, sprzęt, cel, ile realnie masz czasu i Twój główny wróg. To na jej podstawie układam Twoją ścieżkę — bez niej dostaniesz plan ogólny zamiast swojego.
+    </li>
+    <li>
+      <span class="n">2</span>
+      <b><span data-start-date>14 września</span> — dostajesz plan</b>
+      Spersonalizowany plan treningowy (PDF), 7-dniowy detoks dopaminowy i wskazówki żywieniowe. Wszystko w dniu startu kohorty.
+    </li>
+    <li>
+      <span class="n">3</span>
+      <b>Ruszasz razem z grupą</b>
+      Cała kohorta zaczyna Dzień 1 tego samego dnia. Nie zaczynasz sam — i na tym polega różnica.
+    </li>
+  </ol>
+
+  <!-- Ankieta: href podstawiany z window.PW.ANKIETA_URL (atrybut data-ankieta) -->
+  <a href="#" data-ankieta class="ty-btn">Wypełnij ankietę startową <span class="ty-arrow" aria-hidden="true">→</span></a>
+
+  <p class="ty-note">Im wcześniej wypełnisz, tym więcej czasu mam na dopracowanie Twojego planu. Gwarancja zwrotu 30 dni liczy się od dnia dostarczenia planu — szczegóły w <a href="polityka-zwrotow.html">Polityce zwrotów</a>.</p>
+
+  <div class="ty-foot">
+    <span>Pytania? <a href="mailto:michal@planwojownika.pl">michal@planwojownika.pl</a></span>
+    <a href="index.html">← Wróć na stronę główną</a>
+  </div>
+</main>
+
+<script>
+  // ── Zdarzenie Purchase → piksele (Meta/TikTok/GA4) ──
+  // Odpala sie raz na sesje: odswiezenie strony nie zdubluje konwersji.
+  // UWAGA: to zdarzenie NIE jest weryfikowane po stronie serwera — strona jest
+  // statyczna, wiec kazdy moze wejsc tu bezposrednio. Zrodlem prawdy o pieniadzach
+  // jest panel operatora platnosci, nie Menedzer Reklam.
+  (function () {
+    var KEY = 'pw_purchase_fired';
+    try { if (sessionStorage.getItem(KEY)) return; } catch (e) {}
+    if (window.pwTrack) {
+      window.pwTrack('Purchase', {
+        value: (window.PW && window.PW.PRICE) || 349,
+        currency: (window.PW && window.PW.CURRENCY) || 'PLN',
+        content_name: 'Plan Wojownika 90 dni'
+      });
+    }
+    try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+  })();
+
+  // ── Data startu kohorty: ten sam mechanizm co na stronie glownej ──
+  (function () {
+    var els = document.querySelectorAll('[data-start-date]');
+    if (!els.length) return;
+    var label = fixedStartStillAhead() ? window.PW.START_DATE : nextMondayPL();
+    els.forEach(function (el) { el.textContent = label; });
+
+    function fixedStartStillAhead() {
+      if (!window.PW || !window.PW.START_DATE) return false;
+      var iso = window.PW.START_DATE_ISO;
+      if (!iso) return true;
+      var start = new Date(iso + 'T23:59:59');
+      return !isNaN(start.getTime()) && start >= new Date();
+    }
+    function nextMondayPL() {
+      var d = new Date(), day = d.getDay();
+      var add = (8 - (day || 7)) % 7; if (add === 0) add = 7;
+      d.setDate(d.getDate() + add);
+      var m = ['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'];
+      return d.getDate() + ' ' + m[d.getMonth()];
+    }
+  })();
+
+  // ── Ankieta: jeden URL dla przycisku (data-ankieta) ──
+  (function () {
+    var url = (window.PW && window.PW.ANKIETA_URL) || '';
+    document.querySelectorAll('[data-ankieta]').forEach(function (el) {
+      if (url) {
+        el.setAttribute('href', url);
+        el.setAttribute('target', '_blank');
+        el.setAttribute('rel', 'noopener');
+      } else {
+        el.setAttribute('data-pending', '');   // wizualnie nieaktywny
+      }
+      el.addEventListener('click', function (e) {
+        if (!url) {
+          e.preventDefault();
+          console.warn('PW: ustaw window.PW.ANKIETA_URL, aby aktywowac przycisk ankiety.');
+        }
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
