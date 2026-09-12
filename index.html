@@ -29,9 +29,11 @@
      ═══════════════════════════════════════════════════════════════ -->
 <script>
   window.PW = {
-    // TODO: wklej URL checkoutu (Przelewy24 / Stripe payment link).
-    // Użyją go WSZYSTKIE przyciski zakupu (atrybut data-checkout).
-    CHECKOUT_URL: '',
+    // Link płatniczy HotPay (serwis „Plan Wojownika", Pay by Link).
+    // Używają go WSZYSTKIE przyciski zakupu (atrybut data-checkout).
+    // SEKRET w adresie jest jawny z założenia — musi dotrzeć do przeglądarki
+    // klienta. To NIE jest hasło notyfikacji, które zostaje w panelu HotPay.
+    CHECKOUT_URL: 'https://platnosc.hotpay.pl/?SEKRET=Rlc3SC9obVVUN0x5ZFBNbEdIOHpnRUNLaUdPWkVOam1ZR3JINjlJYTE1Yz0%2C&KWOTA=349&NAZWA_USLUGI=Plan%20wojownika-90dni%20&ADRES_WWW=https%3A%2F%2Fplanwojownika.pl%2Fdziekuje&ID_ZAMOWIENIA=&EMAIL=&DANE_OSOBOWE=',
     // TODO: ID pikseli reklamowych (puste = piksel się nie ładuje).
     META_PIXEL_ID: '',     // np. '1234567890123456'
     TIKTOK_PIXEL_ID: '',   // np. 'CXXXXXXXXXXXXXXXXX'
