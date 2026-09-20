@@ -31,9 +31,15 @@
   window.PW = {
     // Link płatniczy HotPay (serwis „Plan Wojownika", Pay by Link).
     // Używają go WSZYSTKIE przyciski zakupu (atrybut data-checkout).
-    // SEKRET w adresie jest jawny z założenia — musi dotrzeć do przeglądarki
-    // klienta. To NIE jest hasło notyfikacji, które zostaje w panelu HotPay.
-    CHECKOUT_URL: 'https://platnosc.hotpay.pl/?SEKRET=Rlc3SC9obVVUN0x5ZFBNbEdIOHpnRUNLaUdPWkVOam1ZR3JINjlJYTE1Yz0%2C&KWOTA=349&NAZWA_USLUGI=Plan%20Wojownika%20-%2090dni%20&ADRES_WWW=https%3A%2F%2Fplanwojownika.pl%2Fdziekuje&ID_ZAMOWIENIA=&EMAIL=&DANE_OSOBOWE=',
+    // SEKRET i HASH są jawne z założenia — muszą dotrzeć do przeglądarki
+    // klienta. Hasło notyfikacji zostaje w panelu HotPay i nigdy tu nie trafia.
+    //
+    // HASH = sha256(HASLO;KWOTA;NAZWA_USLUGI;ADRES_WWW;ID_ZAMOWIENIA;SEKRET)
+    // Podpisuje kwotę i nazwę, więc podmiana KWOTA=1 w pasku adresu kończy się
+    // komunikatem „Błędna wartość funkcji skrótu". UWAGA: zmiana ceny, nazwy
+    // usługi, adresu powrotu albo hasła w panelu = HASH trzeba przeliczyć
+    // OD NOWA, inaczej HotPay odrzuci każdą płatność.
+    CHECKOUT_URL: 'https://platnosc.hotpay.pl/?SEKRET=Rlc3SC9obVVUN0x5ZFBNbEdIOHpnRUNLaUdPWkVOam1ZR3JINjlJYTE1Yz0%2C&KWOTA=349&NAZWA_USLUGI=Plan%20Wojownika%20-%2090%20dni&ADRES_WWW=https%3A%2F%2Fplanwojownika.pl%2Fdziekuje&ID_ZAMOWIENIA=&HASH=400e82a02c5fcad492a81a099925a669b65ef33903ee6209fd07106e42e22f36',
     // TODO: ID pikseli reklamowych (puste = piksel się nie ładuje).
     META_PIXEL_ID: '',     // np. '1234567890123456'
     TIKTOK_PIXEL_ID: '',   // np. 'CXXXXXXXXXXXXXXXXX'

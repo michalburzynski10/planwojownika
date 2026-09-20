@@ -17,8 +17,10 @@
 <script>
   window.PW = {
     // Link płatniczy HotPay — ten sam co w index.html (na tej stronie
-    // nie ma dziś przycisku data-checkout, ale konfiguracja ma być spójna)
-    CHECKOUT_URL: 'https://platnosc.hotpay.pl/?SEKRET=Rlc3SC9obVVUN0x5ZFBNbEdIOHpnRUNLaUdPWkVOam1ZR3JINjlJYTE1Yz0%2C&KWOTA=349&NAZWA_USLUGI=Plan%20Wojownika%20-%2090dni%20&ADRES_WWW=https%3A%2F%2Fplanwojownika.pl%2Fdziekuje&ID_ZAMOWIENIA=&EMAIL=&DANE_OSOBOWE=',
+    // nie ma dziś przycisku data-checkout, ale konfiguracja ma być spójna).
+    // HASH podpisuje kwotę i nazwę usługi — przy zmianie którejkolwiek
+    // z nich przelicz go od nowa (szczegóły w komentarzu w index.html).
+    CHECKOUT_URL: 'https://platnosc.hotpay.pl/?SEKRET=Rlc3SC9obVVUN0x5ZFBNbEdIOHpnRUNLaUdPWkVOam1ZR3JINjlJYTE1Yz0%2C&KWOTA=349&NAZWA_USLUGI=Plan%20Wojownika%20-%2090%20dni&ADRES_WWW=https%3A%2F%2Fplanwojownika.pl%2Fdziekuje&ID_ZAMOWIENIA=&HASH=400e82a02c5fcad492a81a099925a669b65ef33903ee6209fd07106e42e22f36',
     META_PIXEL_ID: '',     // TODO: np. '1234567890123456'
     TIKTOK_PIXEL_ID: '',   // TODO: np. 'CXXXXXXXXXXXXXXXXX'
     GA4_ID: '',            // TODO: np. 'G-XXXXXXXXXX'
